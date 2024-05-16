@@ -1,4 +1,4 @@
-@Library('jenkins-library') _
+@Library('jenkins-library@feature/DOPS-3172/sonar_10.5.1-test') _
 
 // Job properties
 def jobParams = [
