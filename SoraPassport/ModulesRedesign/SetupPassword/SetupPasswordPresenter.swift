@@ -195,13 +195,18 @@ final class SetupPasswordPresenter: SetupPasswordPresenterProtocol {
                         wireframe?.showSetupPinCode()
                     }
                 }
-            } catch {
-                try? await self.cloudStorageService.saveBackup(account: self.backupAccount, password: password)
+            } catch let error {
                 self.view?.hideLoading()
-                self.wireframe?.present(message: nil,
-                                        title: error.localizedDescription,
-                                        closeAction: R.string.localizable.commonOk(preferredLanguages: .currentLocale),
-                                        from: view)
+                try? await self.cloudStorageService.disconnect()
+                try? await self.cloudStorageService.signInIfNeeded()
+                updateCloudStorage(with: password)
+                print("OLOLO error \(error)")
+//                try? await self.cloudStorageService.saveBackup(account: self.backupAccount, password: password)
+//                self.view?.hideLoading()
+//                self.wireframe?.present(message: nil,
+//                                        title: error.localizedDescription,
+//                                        closeAction: R.string.localizable.commonOk(preferredLanguages: .currentLocale),
+//                                        from: view)
             }
         }
     }

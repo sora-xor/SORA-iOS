@@ -67,7 +67,9 @@ extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
     }
     
     func resetGoogleState() {
-        backupService.disconnect()
+        Task {
+            try await backupService.disconnect()
+        }
     }
     
     func getBackupedAccounts() async throws -> [OpenBackupAccount] {

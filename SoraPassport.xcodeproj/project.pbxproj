@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -171,7 +171,7 @@
 		10EB77992541A369000123B9 /* ExtensibleBarNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EB77972541A368000123B9 /* ExtensibleBarNavigationController.swift */; };
 		10F6D03025344EFD00EB64CD /* LinkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F6D02F25344EFD00EB64CD /* LinkViewModel.swift */; };
 		1C881931464751B44D4BB3D5 /* AccountOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D7E66187F1DD32A4C4222E /* AccountOptionsTests.swift */; };
-		20D9ACBA22DBBB68D16C8674 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		20D9ACBA22DBBB68D16C8674 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		253663B5C127B5B99C84BDA3 /* MainTabBarInteractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05611DCC8258FCF79CB7401F /* MainTabBarInteractorTests.swift */; };
 		3213A3092237DAB4001BE041 /* VerificationCodeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3213A3082237DAB4001BE041 /* VerificationCodeData.swift */; };
 		3213A30B2237ED04001BE041 /* sendSmsCodeSuccessResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 3213A30A2237ED04001BE041 /* sendSmsCodeSuccessResponse.json */; };
@@ -193,6 +193,11 @@
 		3603A3992917E63500DF6EFE /* PoolInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3603A3982917E63500DF6EFE /* PoolInfo.swift */; };
 		36069F0C2A2BA3CA00439ADE /* WarningCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36069F0A2A2BA3CA00439ADE /* WarningCell.swift */; };
 		36069F0D2A2BA3CA00439ADE /* WarningItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36069F0B2A2BA3CA00439ADE /* WarningItem.swift */; };
+		3606A47D2C131A650063F673 /* IrohaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 3606A47C2C131A650063F673 /* IrohaCrypto */; };
+		3606A47F2C131A650063F673 /* RobinHood in Frameworks */ = {isa = PBXBuildFile; productRef = 3606A47E2C131A650063F673 /* RobinHood */; };
+		3606A4812C131A650063F673 /* SSFCloudStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 3606A4802C131A650063F673 /* SSFCloudStorage */; };
+		3606A4832C131A650063F673 /* SSFUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 3606A4822C131A650063F673 /* SSFUtils */; };
+		3606A4852C131ABD0063F673 /* SSFQRService in Frameworks */ = {isa = PBXBuildFile; productRef = 3606A4842C131ABD0063F673 /* SSFQRService */; };
 		3608328A28F8820800E57418 /* ProductListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3608328928F8820800E57418 /* ProductListViewController.swift */; };
 		360FF41C2A557F6400D94BA9 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 360FF41B2A557F6400D94BA9 /* ProgressView.swift */; };
 		360FF41F2A568E4800D94BA9 /* DemeterFarmingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 360FF41E2A568E4800D94BA9 /* DemeterFarmingService.swift */; };
@@ -487,7 +492,6 @@
 		367A32262B4551D9001AFA90 /* ExploreSearchPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367A32252B4551D9001AFA90 /* ExploreSearchPageViewModel.swift */; };
 		367A32282B455CBA001AFA90 /* ExploreSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367A32272B455CBA001AFA90 /* ExploreSectionHeader.swift */; };
 		367C55A328FCA631008FC55F /* AssetViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367C55A228FCA631008FC55F /* AssetViewModelFactory.swift */; };
-		367DEEDA2BDFB45300543BB4 /* SSFStorageQueryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 367DEED92BDFB45300543BB4 /* SSFStorageQueryKit */; };
 		3688A43D280F591900C1D16F /* SourceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3688A43C280F591900C1D16F /* SourceType.swift */; };
 		368CCC582BDFCEB4003C354F /* CDCWSingleValue+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368CCC572BDFCEB4003C354F /* CDCWSingleValue+CoreDataCodable.swift */; };
 		368E2CA528F2FCA00071A324 /* BalanceProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368E2CA428F2FCA00071A324 /* BalanceProviderFactory.swift */; };
@@ -507,7 +511,6 @@
 		3694D45B2971F5450045A295 /* ActivityErrorItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3694D4592971F5450045A295 /* ActivityErrorItem.swift */; };
 		3694D45C2971F5450045A295 /* ActivityErrorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3694D45A2971F5450045A295 /* ActivityErrorCell.swift */; };
 		36982465290EA54100F5E3D4 /* ActivityViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36982464290EA54100F5E3D4 /* ActivityViewModelFactory.swift */; };
-		369E10BB2B91DAEC0097DB61 /* IrohaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 369E10BA2B91DAEC0097DB61 /* IrohaCrypto */; };
 		369E10C32B91DF3D0097DB61 /* PolkadotIconGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369E10C22B91DF3D0097DB61 /* PolkadotIconGenerator.swift */; };
 		36A0CE232B1D86A900187E3C /* ExtrinsicBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A0CE222B1D86A900187E3C /* ExtrinsicBuilder.swift */; };
 		36A0CE252B1D870500187E3C /* ExtrinsicCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A0CE242B1D870500187E3C /* ExtrinsicCheck.swift */; };
@@ -539,6 +542,8 @@
 		36BB9B212AF37EB4002A000D /* RecentActivityItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BB9B202AF37EB4002A000D /* RecentActivityItemService.swift */; };
 		36BB9B232AF38A97002A000D /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BB9B222AF38A97002A000D /* ActivityView.swift */; };
 		36BB9B252AF4FCCF002A000D /* NewBlockEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BB9B242AF4FCCF002A000D /* NewBlockEvent.swift */; };
+		36C2CB4B2C131C2F00BB8EDC /* SSFSingleValueCache in Frameworks */ = {isa = PBXBuildFile; productRef = 36C2CB4A2C131C2F00BB8EDC /* SSFSingleValueCache */; };
+		36C2CB4D2C131C4F00BB8EDC /* SSFStorageQueryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 36C2CB4C2C131C4F00BB8EDC /* SSFStorageQueryKit */; };
 		36C2EA762B569DE100CC3934 /* CustomNodeWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C2EA752B569DE100CC3934 /* CustomNodeWireframe.swift */; };
 		36C3708628228F450027BA77 /* ButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C3708528228F450027BA77 /* ButtonCell.swift */; };
 		36C3708F2822960E0027BA77 /* ButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C3708E2822960E0027BA77 /* ButtonViewModel.swift */; };
@@ -555,10 +560,7 @@
 		36C66EAE2A5D72E000ADAD5E /* PoolDetailsItemFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C66EAD2A5D72E000ADAD5E /* PoolDetailsItemFactory.swift */; };
 		36C88A262A32EAA800B3CF39 /* AccountOptionSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C88A252A32EAA800B3CF39 /* AccountOptionSeparator.swift */; };
 		36C88DFF2821283E0038B7F9 /* InputLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C88DFE2821283E0038B7F9 /* InputLinkViewController.swift */; };
-		36CEAD7B2B9471DD00D532E0 /* SSFCloudStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 36CEAD7A2B9471DD00D532E0 /* SSFCloudStorage */; };
-		36CEAD7D2B94734200D532E0 /* SSFCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 36CEAD7C2B94734200D532E0 /* SSFCrypto */; };
 		36CEAD812B9488CD00D532E0 /* AddressQREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD802B9488CD00D532E0 /* AddressQREncoder.swift */; };
-		36CEAD832B948A0B00D532E0 /* SSFQRService in Frameworks */ = {isa = PBXBuildFile; productRef = 36CEAD822B948A0B00D532E0 /* SSFQRService */; };
 		36CEAD862B948DBE00D532E0 /* SubstrateQRCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD842B948DBD00D532E0 /* SubstrateQRCommon.swift */; };
 		36CEAD872B948DBE00D532E0 /* AddressQRDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD852B948DBE00D532E0 /* AddressQRDecoder.swift */; };
 		36CEAD892B94938900D532E0 /* QRCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD882B94938900D532E0 /* QRCommon.swift */; };
@@ -758,7 +760,7 @@
 		60AAFDCA270EEEDB00916408 /* Migrating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AAFDC6270EEEDB00916408 /* Migrating.swift */; };
 		71C674AA5856E4777FD7514E /* FriendsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E44F911EE9113FACEA3CB0 /* FriendsProtocols.swift */; };
 		7798D61427F5054000BEA4C9 /* LiquiditySlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7798D61327F5054000BEA4C9 /* LiquiditySlider.swift */; };
-		82933CD8A0C33141410DBBB2 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		82933CD8A0C33141410DBBB2 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		83878AE3532AC4DD065FA2FD /* Pods_SoraPassportAll_SoraPassportIntegrationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FB0FDB5BA82DEA6A730725F /* Pods_SoraPassportAll_SoraPassportIntegrationTests.framework */; };
 		84014FA92243C1FB00C35EFD /* BaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84014FA82243C1FB00C35EFD /* BaseService.swift */; };
 		84014FCF2244B5A000C35EFD /* Entities.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 84014FCD2244B5A000C35EFD /* Entities.xcdatamodeld */; };
@@ -2910,12 +2912,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36CEAD832B948A0B00D532E0 /* SSFQRService in Frameworks */,
-				369E10BB2B91DAEC0097DB61 /* IrohaCrypto in Frameworks */,
-				36CEAD7B2B9471DD00D532E0 /* SSFCloudStorage in Frameworks */,
-				367DEEDA2BDFB45300543BB4 /* SSFStorageQueryKit in Frameworks */,
-				36CEAD7D2B94734200D532E0 /* SSFCrypto in Frameworks */,
 				A9862F10E2DF89931A913A2C /* Pods_SoraPassportAll_SoraPassport.framework in Frameworks */,
+				36C2CB4D2C131C4F00BB8EDC /* SSFStorageQueryKit in Frameworks */,
+				3606A47F2C131A650063F673 /* RobinHood in Frameworks */,
+				3606A4852C131ABD0063F673 /* SSFQRService in Frameworks */,
+				36C2CB4B2C131C2F00BB8EDC /* SSFSingleValueCache in Frameworks */,
+				3606A4832C131A650063F673 /* SSFUtils in Frameworks */,
+				3606A47D2C131A650063F673 /* IrohaCrypto in Frameworks */,
+				3606A4812C131A650063F673 /* SSFCloudStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2931,7 +2935,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				82933CD8A0C33141410DBBB2 /* BuildFile in Frameworks */,
+				82933CD8A0C33141410DBBB2 /* (null) in Frameworks */,
 				EB5AD75F41D805FBD895EC50 /* Pods_SoraPassportUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6662,11 +6666,13 @@
 			);
 			name = SoraPassport;
 			packageProductDependencies = (
-				369E10BA2B91DAEC0097DB61 /* IrohaCrypto */,
-				36CEAD7A2B9471DD00D532E0 /* SSFCloudStorage */,
-				36CEAD7C2B94734200D532E0 /* SSFCrypto */,
-				36CEAD822B948A0B00D532E0 /* SSFQRService */,
-				367DEED92BDFB45300543BB4 /* SSFStorageQueryKit */,
+				3606A47C2C131A650063F673 /* IrohaCrypto */,
+				3606A47E2C131A650063F673 /* RobinHood */,
+				3606A4802C131A650063F673 /* SSFCloudStorage */,
+				3606A4822C131A650063F673 /* SSFUtils */,
+				3606A4842C131ABD0063F673 /* SSFQRService */,
+				36C2CB4A2C131C2F00BB8EDC /* SSFSingleValueCache */,
+				36C2CB4C2C131C4F00BB8EDC /* SSFStorageQueryKit */,
 			);
 			productName = SoraPassport;
 			productReference = 02623EB52178C0910011250E /* SoraPassport.app */;
@@ -6815,7 +6821,7 @@
 			);
 			mainGroup = 02623EAC2178C0910011250E;
 			packageReferences = (
-				369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */,
+				3606A47B2C131A650063F673 /* XCLocalSwiftPackageReference "shared-features-spm" */,
 			);
 			productRefGroup = 02623EB62178C0910011250E /* Products */;
 			projectDirPath = "";
@@ -6949,7 +6955,7 @@
 			);
 			name = R.swift;
 			outputPaths = (
-				"$PROJECT_DIR/R.generated.swift",
+				$PROJECT_DIR/R.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -7201,7 +7207,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$PROJECT_DIR/SoraPassport/CIKeys.generated.swift",
+				$PROJECT_DIR/SoraPassport/CIKeys.generated.swift,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -8635,7 +8641,7 @@
 				945A578325DE8B06003E4023 /* ExtrinsicEraTests.swift in Sources */,
 				8409323823414FEE0013C871 /* WalletContextMock.swift in Sources */,
 				BD19B478DAD9A5F1E97DA0C4 /* AboutTests.swift in Sources */,
-				20D9ACBA22DBBB68D16C8674 /* BuildFile in Sources */,
+				20D9ACBA22DBBB68D16C8674 /* (null) in Sources */,
 				945A574A25DE8495003E4023 /* RuntimeMetadataCreationHelper.swift in Sources */,
 				44349E2AA7B537FA2794A222 /* StakingTests.swift in Sources */,
 				36A12693289143D7009117B9 /* WalletNetworkOperationFactoryProtocolMock.swift in Sources */,
@@ -9680,42 +9686,44 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/soramitsu/shared-features-spm";
-			requirement = {
-				branch = develop;
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		3606A47B2C131A650063F673 /* XCLocalSwiftPackageReference "shared-features-spm" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "shared-features-spm";
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		367DEED92BDFB45300543BB4 /* SSFStorageQueryKit */ = {
+		3606A47C2C131A650063F673 /* IrohaCrypto */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
-			productName = SSFStorageQueryKit;
-		};
-		369E10BA2B91DAEC0097DB61 /* IrohaCrypto */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
 			productName = IrohaCrypto;
 		};
-		36CEAD7A2B9471DD00D532E0 /* SSFCloudStorage */ = {
+		3606A47E2C131A650063F673 /* RobinHood */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
+			productName = RobinHood;
+		};
+		3606A4802C131A650063F673 /* SSFCloudStorage */ = {
+			isa = XCSwiftPackageProductDependency;
 			productName = SSFCloudStorage;
 		};
-		36CEAD7C2B94734200D532E0 /* SSFCrypto */ = {
+		3606A4822C131A650063F673 /* SSFUtils */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
-			productName = SSFCrypto;
+			productName = SSFUtils;
 		};
-		36CEAD822B948A0B00D532E0 /* SSFQRService */ = {
+		3606A4842C131ABD0063F673 /* SSFQRService */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
+			package = 3606A47B2C131A650063F673 /* XCLocalSwiftPackageReference "shared-features-spm" */;
 			productName = SSFQRService;
+		};
+		36C2CB4A2C131C2F00BB8EDC /* SSFSingleValueCache */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3606A47B2C131A650063F673 /* XCLocalSwiftPackageReference "shared-features-spm" */;
+			productName = SSFSingleValueCache;
+		};
+		36C2CB4C2C131C4F00BB8EDC /* SSFStorageQueryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3606A47B2C131A650063F673 /* XCLocalSwiftPackageReference "shared-features-spm" */;
+			productName = SSFStorageQueryKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

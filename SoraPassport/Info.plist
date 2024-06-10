@@ -27,7 +27,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>$(SORA_GOOGLE_URL_SCHEME_DEV)</string>
+				<string>com.googleusercontent.apps.498393666682-4us0vuqlsgiartt0oqalcfbfv7gu7lir</string>
 			</array>
 		</dict>
 	</array>
@@ -36,7 +36,7 @@
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>GIDClientID</key>
-	<string>$(SORA_GOOGLE_TOKEN_DEV)</string>
+	<string>498393666682-4us0vuqlsgiartt0oqalcfbfv7gu7lir.apps.googleusercontent.com</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>soracard.wallet.test</string>
