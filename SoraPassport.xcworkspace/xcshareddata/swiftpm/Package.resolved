@@ -105,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/soramitsu/shared-features-spm",
       "state" : {
-        "branch" : "develop",
-        "revision" : "a95594321115d2cb87dffa64d19926521965b3ca"
+        "branch" : "feature/signing-fix",
+        "revision" : "267c8686329a88209259a80150014dc95eac4bca"
       }
     },
     {
@@ -209,12 +209,12 @@
       }
     },
     {
-      "identity" : "web3.swift",
+      "identity" : "web3-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/bnsports/Web3.swift.git",
+      "location" : "https://github.com/soramitsu/web3-swift",
       "state" : {
-        "branch" : "master",
-        "revision" : "a526779488e5fe2fa993d9614f11f57b00cc1858"
+        "revision" : "a526779488e5fe2fa993d9614f11f57b00cc1858",
+        "version" : "7.7.7"
       }
     },
     {

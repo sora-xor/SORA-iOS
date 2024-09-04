@@ -9705,7 +9705,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/soramitsu/shared-features-spm";
 			requirement = {
-				branch = develop;
+				branch = "feature/signing-fix";
 				kind = branch;
 			};
 		};
