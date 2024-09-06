@@ -582,7 +582,6 @@
 		36DBFE0628FC48C600735535 /* ZeroBalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DBFE0428FC48C600735535 /* ZeroBalanceCell.swift */; };
 		36DBFE0728FC48C600735535 /* ZeroBalanceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DBFE0528FC48C600735535 /* ZeroBalanceItem.swift */; };
 		36E00BB029DB2DAD0023D8BD /* AssetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E00BAF29DB2DAD0023D8BD /* AssetProvider.swift */; };
-		36E0371E2C88956E00C41E47 /* IrohaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 36E0371D2C88956E00C41E47 /* IrohaCrypto */; };
 		36E037202C88956E00C41E47 /* SSFCloudStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 36E0371F2C88956E00C41E47 /* SSFCloudStorage */; };
 		36E037222C88956E00C41E47 /* SSFCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 36E037212C88956E00C41E47 /* SSFCrypto */; };
 		36E037242C88956E00C41E47 /* SSFQRService in Frameworks */ = {isa = PBXBuildFile; productRef = 36E037232C88956E00C41E47 /* SSFQRService */; };
@@ -2912,7 +2911,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36E0371E2C88956E00C41E47 /* IrohaCrypto in Frameworks */,
 				367C53302C189D7E00C07F56 /* libswiftCoreGraphics.tbd in Frameworks */,
 				36E037262C88956E00C41E47 /* SSFStorageQueryKit in Frameworks */,
 				36E037242C88956E00C41E47 /* SSFQRService in Frameworks */,
