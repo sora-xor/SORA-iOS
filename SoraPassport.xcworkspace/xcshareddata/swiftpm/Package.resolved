@@ -105,8 +105,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/soramitsu/shared-features-spm",
       "state" : {
-        "branch" : "feature/signing-fix",
-        "revision" : "27b156181e3e8d049dcb3b1fd56306256c2e8dd2"
+        "revision" : "2577cca21722ab7965bd8b3041c40f55e0891287"
       }
     },
     {
