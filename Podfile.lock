@@ -246,7 +246,7 @@ DEPENDENCIES:
   - R.swift (~> 6.1.0)
   - ReachabilitySwift
   - RobinHood (~> 2.6.1)
-  - SCard (from `https://github.com/sora-xor/sora-card-ios`, branch `release/1.6.0`)
+  - SCard (from `https://github.com/sora-xor/sora-card-ios`, tag `1.6.0`)
   - SnapKit
   - SoraDocuments
   - SoraFoundation
@@ -314,8 +314,8 @@ EXTERNAL SOURCES:
     :branch: version6-xcode13
     :git: https://github.com/onevcat/Kingfisher
   SCard:
-    :branch: release/1.6.0
     :git: https://github.com/sora-xor/sora-card-ios
+    :tag: 1.6.0
   SoraUIKit:
     :git: https://github.com/soramitsu/ios-ui
     :tag: 1.1.12
@@ -335,8 +335,8 @@ CHECKOUT OPTIONS:
     :commit: d0494dd78f7adf2d3526fdf3267176553020c041
     :git: https://github.com/onevcat/Kingfisher
   SCard:
-    :commit: 301c599eadc69afadfcfb5231af4ede766726187
     :git: https://github.com/sora-xor/sora-card-ios
+    :tag: 1.6.0
   SoraUIKit:
     :git: https://github.com/soramitsu/ios-ui
     :tag: 1.1.12
@@ -399,6 +399,6 @@ SPEC CHECKSUMS:
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: 3d2cdb4aa9b5a06194ee9b39277af0233ad78550
+PODFILE CHECKSUM: add7db99e5c69a7bb359bc898cdd6b23edea0194
 
 COCOAPODS: 1.12.1
