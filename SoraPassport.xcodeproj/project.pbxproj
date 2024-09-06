@@ -489,7 +489,6 @@
 		367A32282B455CBA001AFA90 /* ExploreSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367A32272B455CBA001AFA90 /* ExploreSectionHeader.swift */; };
 		367C53302C189D7E00C07F56 /* libswiftCoreGraphics.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 367C532F2C189CF500C07F56 /* libswiftCoreGraphics.tbd */; };
 		367C55A328FCA631008FC55F /* AssetViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367C55A228FCA631008FC55F /* AssetViewModelFactory.swift */; };
-		367DEEDA2BDFB45300543BB4 /* SSFStorageQueryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 367DEED92BDFB45300543BB4 /* SSFStorageQueryKit */; };
 		3688A43D280F591900C1D16F /* SourceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3688A43C280F591900C1D16F /* SourceType.swift */; };
 		368CCC582BDFCEB4003C354F /* CDCWSingleValue+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368CCC572BDFCEB4003C354F /* CDCWSingleValue+CoreDataCodable.swift */; };
 		368E2CA528F2FCA00071A324 /* BalanceProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368E2CA428F2FCA00071A324 /* BalanceProviderFactory.swift */; };
@@ -509,7 +508,6 @@
 		3694D45B2971F5450045A295 /* ActivityErrorItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3694D4592971F5450045A295 /* ActivityErrorItem.swift */; };
 		3694D45C2971F5450045A295 /* ActivityErrorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3694D45A2971F5450045A295 /* ActivityErrorCell.swift */; };
 		36982465290EA54100F5E3D4 /* ActivityViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36982464290EA54100F5E3D4 /* ActivityViewModelFactory.swift */; };
-		369E10BB2B91DAEC0097DB61 /* IrohaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 369E10BA2B91DAEC0097DB61 /* IrohaCrypto */; };
 		369E10C32B91DF3D0097DB61 /* PolkadotIconGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369E10C22B91DF3D0097DB61 /* PolkadotIconGenerator.swift */; };
 		36A0CE232B1D86A900187E3C /* ExtrinsicBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A0CE222B1D86A900187E3C /* ExtrinsicBuilder.swift */; };
 		36A0CE252B1D870500187E3C /* ExtrinsicCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A0CE242B1D870500187E3C /* ExtrinsicCheck.swift */; };
@@ -557,10 +555,7 @@
 		36C66EAE2A5D72E000ADAD5E /* PoolDetailsItemFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C66EAD2A5D72E000ADAD5E /* PoolDetailsItemFactory.swift */; };
 		36C88A262A32EAA800B3CF39 /* AccountOptionSeparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C88A252A32EAA800B3CF39 /* AccountOptionSeparator.swift */; };
 		36C88DFF2821283E0038B7F9 /* InputLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C88DFE2821283E0038B7F9 /* InputLinkViewController.swift */; };
-		36CEAD7B2B9471DD00D532E0 /* SSFCloudStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 36CEAD7A2B9471DD00D532E0 /* SSFCloudStorage */; };
-		36CEAD7D2B94734200D532E0 /* SSFCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 36CEAD7C2B94734200D532E0 /* SSFCrypto */; };
 		36CEAD812B9488CD00D532E0 /* AddressQREncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD802B9488CD00D532E0 /* AddressQREncoder.swift */; };
-		36CEAD832B948A0B00D532E0 /* SSFQRService in Frameworks */ = {isa = PBXBuildFile; productRef = 36CEAD822B948A0B00D532E0 /* SSFQRService */; };
 		36CEAD862B948DBE00D532E0 /* SubstrateQRCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD842B948DBD00D532E0 /* SubstrateQRCommon.swift */; };
 		36CEAD872B948DBE00D532E0 /* AddressQRDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD852B948DBE00D532E0 /* AddressQRDecoder.swift */; };
 		36CEAD892B94938900D532E0 /* QRCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36CEAD882B94938900D532E0 /* QRCommon.swift */; };
@@ -587,6 +582,11 @@
 		36DBFE0628FC48C600735535 /* ZeroBalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DBFE0428FC48C600735535 /* ZeroBalanceCell.swift */; };
 		36DBFE0728FC48C600735535 /* ZeroBalanceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DBFE0528FC48C600735535 /* ZeroBalanceItem.swift */; };
 		36E00BB029DB2DAD0023D8BD /* AssetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E00BAF29DB2DAD0023D8BD /* AssetProvider.swift */; };
+		36E0371E2C88956E00C41E47 /* IrohaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 36E0371D2C88956E00C41E47 /* IrohaCrypto */; };
+		36E037202C88956E00C41E47 /* SSFCloudStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 36E0371F2C88956E00C41E47 /* SSFCloudStorage */; };
+		36E037222C88956E00C41E47 /* SSFCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 36E037212C88956E00C41E47 /* SSFCrypto */; };
+		36E037242C88956E00C41E47 /* SSFQRService in Frameworks */ = {isa = PBXBuildFile; productRef = 36E037232C88956E00C41E47 /* SSFQRService */; };
+		36E037262C88956E00C41E47 /* SSFStorageQueryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 36E037252C88956E00C41E47 /* SSFStorageQueryKit */; };
 		36E0BB8A29F52821000510D9 /* WalletStaticImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E0BB8929F52821000510D9 /* WalletStaticImageViewModel.swift */; };
 		36E34F852BA05491005A44BC /* WalletAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E34F842BA05491005A44BC /* WalletAsset.swift */; };
 		36E34F872BA054D0005A44BC /* WalletWithdrawOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E34F862BA054D0005A44BC /* WalletWithdrawOption.swift */; };
@@ -2912,13 +2912,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				36CEAD832B948A0B00D532E0 /* SSFQRService in Frameworks */,
-				369E10BB2B91DAEC0097DB61 /* IrohaCrypto in Frameworks */,
-				36CEAD7B2B9471DD00D532E0 /* SSFCloudStorage in Frameworks */,
+				36E0371E2C88956E00C41E47 /* IrohaCrypto in Frameworks */,
 				367C53302C189D7E00C07F56 /* libswiftCoreGraphics.tbd in Frameworks */,
-				367DEEDA2BDFB45300543BB4 /* SSFStorageQueryKit in Frameworks */,
-				36CEAD7D2B94734200D532E0 /* SSFCrypto in Frameworks */,
+				36E037262C88956E00C41E47 /* SSFStorageQueryKit in Frameworks */,
+				36E037242C88956E00C41E47 /* SSFQRService in Frameworks */,
 				779BC4BEFD1E01402E80DF90 /* Pods_SoraPassportAll_SoraPassport.framework in Frameworks */,
+				36E037202C88956E00C41E47 /* SSFCloudStorage in Frameworks */,
+				36E037222C88956E00C41E47 /* SSFCrypto in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6658,11 +6658,11 @@
 			);
 			name = SoraPassport;
 			packageProductDependencies = (
-				369E10BA2B91DAEC0097DB61 /* IrohaCrypto */,
-				36CEAD7A2B9471DD00D532E0 /* SSFCloudStorage */,
-				36CEAD7C2B94734200D532E0 /* SSFCrypto */,
-				36CEAD822B948A0B00D532E0 /* SSFQRService */,
-				367DEED92BDFB45300543BB4 /* SSFStorageQueryKit */,
+				36E0371D2C88956E00C41E47 /* IrohaCrypto */,
+				36E0371F2C88956E00C41E47 /* SSFCloudStorage */,
+				36E037212C88956E00C41E47 /* SSFCrypto */,
+				36E037232C88956E00C41E47 /* SSFQRService */,
+				36E037252C88956E00C41E47 /* SSFStorageQueryKit */,
 			);
 			productName = SoraPassport;
 			productReference = 02623EB52178C0910011250E /* SoraPassport.app */;
@@ -6811,7 +6811,7 @@
 			);
 			mainGroup = 02623EAC2178C0910011250E;
 			packageReferences = (
-				369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */,
+				36E0371C2C88956E00C41E47 /* XCRemoteSwiftPackageReference "shared-features-spm" */,
 			);
 			productRefGroup = 02623EB62178C0910011250E /* Products */;
 			projectDirPath = "";
@@ -9701,41 +9701,41 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */ = {
+		36E0371C2C88956E00C41E47 /* XCRemoteSwiftPackageReference "shared-features-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/soramitsu/shared-features-spm";
 			requirement = {
-				kind = revision;
-				revision = 80af731a3140735003b8b87293620d090d54d8a5;
+				branch = "feature/signing-fix";
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		367DEED92BDFB45300543BB4 /* SSFStorageQueryKit */ = {
+		36E0371D2C88956E00C41E47 /* IrohaCrypto */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
-			productName = SSFStorageQueryKit;
-		};
-		369E10BA2B91DAEC0097DB61 /* IrohaCrypto */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
+			package = 36E0371C2C88956E00C41E47 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
 			productName = IrohaCrypto;
 		};
-		36CEAD7A2B9471DD00D532E0 /* SSFCloudStorage */ = {
+		36E0371F2C88956E00C41E47 /* SSFCloudStorage */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
+			package = 36E0371C2C88956E00C41E47 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
 			productName = SSFCloudStorage;
 		};
-		36CEAD7C2B94734200D532E0 /* SSFCrypto */ = {
+		36E037212C88956E00C41E47 /* SSFCrypto */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
+			package = 36E0371C2C88956E00C41E47 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
 			productName = SSFCrypto;
 		};
-		36CEAD822B948A0B00D532E0 /* SSFQRService */ = {
+		36E037232C88956E00C41E47 /* SSFQRService */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 369E10B92B91DAEC0097DB61 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
+			package = 36E0371C2C88956E00C41E47 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
 			productName = SSFQRService;
+		};
+		36E037252C88956E00C41E47 /* SSFStorageQueryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 36E0371C2C88956E00C41E47 /* XCRemoteSwiftPackageReference "shared-features-spm" */;
+			productName = SSFStorageQueryKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

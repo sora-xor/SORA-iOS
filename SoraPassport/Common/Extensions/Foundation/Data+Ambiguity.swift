@@ -46,14 +46,4 @@ extension Data {
         let hexString = soraHex
         return "0x\(hexString)"
     }
-
-    init(hex: String) throws {
-        let prefix = "0x"
-        if hex.hasPrefix(prefix) {
-            let filtered = String(hex.suffix(hex.count - prefix.count))
-            self = (try NSData(hexString: filtered)) as Data
-        } else {
-            self = (try NSData(hexString: hex)) as Data
-        }
-    }
 }
