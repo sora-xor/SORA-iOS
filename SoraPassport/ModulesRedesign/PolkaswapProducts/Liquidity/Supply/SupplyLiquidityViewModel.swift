@@ -341,11 +341,10 @@ extension SupplyLiquidityViewModel: LiquidityViewModelProtocol {
         guard let assetManager = assetManager,
               let fiatService = fiatService,
               let xorAsset = assetManager.assetInfo(for: WalletAssetId.xor.rawValue),
-              let xstUsdAsset = assetManager.assetInfo(for: WalletAssetId.xstusd.rawValue),
-              let kxorAsset = assetManager.assetInfo(for: WalletAssetId.kxor)
+              let xstUsdAsset = assetManager.assetInfo(for: WalletAssetId.xstusd.rawValue)
         else { return }
 
-        var acceptableAssets = [xorAsset, kxorAsset]
+        var acceptableAssets = [xorAsset]
         
         if secondAssetId != WalletAssetId.xst.rawValue {
             acceptableAssets.append(xstUsdAsset)
@@ -382,10 +381,6 @@ extension SupplyLiquidityViewModel: LiquidityViewModelProtocol {
                 
                 return assetFilter && !unAcceptableAssetIds.contains(assetId)
             }) else { return }
-        
-        if firstAssetId == WalletAssetId.kxor {
-            assets = [ ethAsset ]
-        }
 
         let factory = AssetViewModelFactory(walletAssets: assetManager.getAssetList() ?? [],
                                             assetManager: assetManager,

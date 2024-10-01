@@ -412,6 +412,7 @@
 		365BFF8E2B3BCE3C0035DD78 /* DemeterFarmingClaimRewardCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 365BFF8B2B3BCE3C0035DD78 /* DemeterFarmingClaimRewardCall.swift */; };
 		365BFF8F2B3BCE3C0035DD78 /* DemeterFarmingDepositLiquidityCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 365BFF8C2B3BCE3C0035DD78 /* DemeterFarmingDepositLiquidityCall.swift */; };
 		365BFF912B3BE3C00035DD78 /* ClaimRewardsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 365BFF902B3BE3C00035DD78 /* ClaimRewardsService.swift */; };
+		365CC1B32CABF71A00CA8E4B /* IrohaCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 36E0371D2C88956E00C41E47 /* IrohaCrypto */; };
 		3661C8A82848D8BA00660434 /* SoraHistoryItem+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3661C8A72848D8BA00660434 /* SoraHistoryItem+Wallet.swift */; };
 		3661C8AA28490E9500660434 /* UIScreen+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3661C8A928490E9500660434 /* UIScreen+Size.swift */; };
 		3661C9D62850BF2500660434 /* TotalRewardsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3661C9D42850BF2500660434 /* TotalRewardsCell.swift */; };
@@ -2911,6 +2912,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				365CC1B32CABF71A00CA8E4B /* IrohaCrypto in Frameworks */,
 				367C53302C189D7E00C07F56 /* libswiftCoreGraphics.tbd in Frameworks */,
 				36E037262C88956E00C41E47 /* SSFStorageQueryKit in Frameworks */,
 				36E037242C88956E00C41E47 /* SSFQRService in Frameworks */,
