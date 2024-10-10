@@ -156,10 +156,15 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         
         let polkaswapContext = PolkaswapNetworkOperationFactory(engine: connection)
         
-        let poolsService = AccountPoolsService(operationManager: OperationManagerFacade.sharedManager,
-                                              networkFacade: walletContext.networkOperationFactory,
-                                              polkaswapNetworkFacade: polkaswapContext,
-                                              config: ApplicationConfig.shared)
+        let dexService = DexInfoServiceDefault(engine: connection)
+        
+        let poolsService = AccountPoolsService(
+            operationManager: OperationManagerFacade.sharedManager,
+            networkFacade: walletContext.networkOperationFactory,
+            polkaswapNetworkFacade: polkaswapContext,
+            config: ApplicationConfig.shared,
+            dexService: dexService
+        )
         farmingService.poolsService = poolsService
         
         let poolViewModelsfactory = PoolViewModelFactory(walletAssets: assetInfos,
@@ -176,17 +181,20 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         
         let feeProvider = FeeProvider()
         
-        guard let walletController = createWalletRedesignController(walletContext: walletContext,
-                                                                    assetManager: assetManager,
-                                                                    poolsService: poolsService,
-                                                                    assetsProvider: assetsProvider,
-                                                                    poolsViewModelService: poolsViewModelService,
-                                                                    assetsViewModelService: assetsViewModelService,
-                                                                    editViewService: editViewService,
-                                                                    accountSettings: accountSettings, 
-                                                                    farmingService: farmingService,
-                                                                    feeProvider: feeProvider,
-                                                                    localizationManager: localizationManager) else {
+        guard let walletController = createWalletRedesignController(
+            walletContext: walletContext,
+            assetManager: assetManager,
+            poolsService: poolsService,
+            assetsProvider: assetsProvider,
+            poolsViewModelService: poolsViewModelService,
+            assetsViewModelService: assetsViewModelService,
+            editViewService: editViewService,
+            accountSettings: accountSettings, 
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            dexService: dexService,
+            localizationManager: localizationManager
+        ) else {
             return
         }
         
@@ -247,10 +255,15 @@ extension MainTabBarViewFactory {
         }
         let polkaswapContext = PolkaswapNetworkOperationFactory(engine: connection)
         
-        let poolsService = AccountPoolsService(operationManager: OperationManagerFacade.sharedManager,
-                                              networkFacade: walletContext.networkOperationFactory,
-                                              polkaswapNetworkFacade: polkaswapContext,
-                                              config: ApplicationConfig.shared)
+        let dexService = DexInfoServiceDefault(engine: connection)
+        
+        let poolsService = AccountPoolsService(
+            operationManager: OperationManagerFacade.sharedManager,
+            networkFacade: walletContext.networkOperationFactory,
+            polkaswapNetworkFacade: polkaswapContext,
+            config: ApplicationConfig.shared,
+            dexService: dexService
+        )
         farmingService.poolsService = poolsService
         let factory = PoolViewModelFactory(walletAssets: assetInfos,
                                             assetManager: assetManager,
@@ -265,16 +278,19 @@ extension MainTabBarViewFactory {
         let editViewService = EditViewService(poolsService: poolsService)
         poolsService.appendDelegate(delegate: editViewService)
         
-        guard let walletController = createWalletRedesignController(walletContext: walletContext,
-                                                                    assetManager: assetManager,
-                                                                    poolsService: poolsService,
-                                                                    assetsProvider: assetsProvider,
-                                                                    poolsViewModelService: poolsViewModelService,
-                                                                    assetsViewModelService: assetsViewModelService,
-                                                                    editViewService: editViewService,
-                                                                    accountSettings: accountSettings, 
-                                                                    farmingService: farmingService, 
-                                                                    feeProvider: feeProvider) else {
+        guard let walletController = createWalletRedesignController(
+            walletContext: walletContext,
+            assetManager: assetManager,
+            poolsService: poolsService,
+            assetsProvider: assetsProvider,
+            poolsViewModelService: poolsViewModelService,
+            assetsViewModelService: assetsViewModelService,
+            editViewService: editViewService,
+            accountSettings: accountSettings,
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            dexService: dexService
+        ) else {
             return nil
         }
         
@@ -288,24 +304,32 @@ extension MainTabBarViewFactory {
             return nil
         }
         
-        guard let investController = createInvestController(walletContext: walletContext,
-                                                            assetManager: assetManager,
-                                                            networkFacade: walletContext.networkOperationFactory,
-                                                            polkaswapNetworkFacade: polkaswapContext,
-                                                            poolsService: poolsService,
-                                                            accountSettings: accountSettings,
-                                                            assetsProvider: assetsProvider, 
-                                                            farmingService: farmingService,
-                                                            feeProvider: feeProvider,
-                                                            walletAssets: assetInfos) else {
+        guard let investController = createInvestController(
+            walletContext: walletContext,
+            assetManager: assetManager,
+            networkFacade: walletContext.networkOperationFactory,
+            polkaswapNetworkFacade: polkaswapContext,
+            poolsService: poolsService,
+            accountSettings: accountSettings,
+            assetsProvider: assetsProvider,
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            walletAssets: assetInfos,
+            dexService: dexService
+        ) else {
             return nil
         }
         
         view.middleButtonHadler = {
-            guard let swapViewController = createSwapController(walletContext: walletContext,
-                                                                assetManager: assetManager,
-                                                                assetsProvider: assetsProvider,
-                                                                localizationManager: LocalizationManager.shared) else { return }
+            guard let swapViewController = createSwapController(
+                walletContext: walletContext,
+                assetManager: assetManager,
+                assetsProvider: assetsProvider,
+                localizationManager: LocalizationManager.shared,
+                dexService: dexService
+            ) else {
+                return
+            }
             guard let containerView = swapDisclamerController(completion: {
                 UserDefaults.standard.set(true, forKey: "isDisclamerShown")
                 view.present(swapViewController, animated: true)
@@ -334,6 +358,7 @@ extension MainTabBarViewFactory {
                                                accountSettings: WalletAccountSettingsProtocol,
                                                farmingService: DemeterFarmingServiceProtocol,
                                                feeProvider: FeeProviderProtocol,
+                                               dexService: DexInfoService,
                                                localizationManager: LocalizationManagerProtocol = LocalizationManager.shared) -> UIViewController? {
         guard let connection = ChainRegistryFacade.sharedRegistry.getConnection(for: Chain.sora.genesisHash()),
               let runtimeRegistry = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: Chain.sora.genesisHash()) else {
@@ -388,7 +413,8 @@ extension MainTabBarViewFactory {
                                                                     assetsViewModelService: assetsViewModelService,
                                                                     marketCapService: marketCapService,
                                                                     editViewService: editViewService, 
-                                                                    feeProvider: feeProvider)
+                                                                    feeProvider: feeProvider,
+                                                                    dexService: dexService)
         
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.walletTitle(preferredLanguages: locale.rLanguages)
@@ -497,16 +523,19 @@ extension MainTabBarViewFactory {
             return navigationController
         }
     
-    static func createInvestController(walletContext: CommonWalletContextProtocol,
-                                       assetManager: AssetManagerProtocol,
-                                       networkFacade: WalletNetworkOperationFactoryProtocol?,
-                                       polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?,
-                                       poolsService: PoolsServiceInputProtocol,
-                                       accountSettings: WalletAccountSettingsProtocol,
-                                       assetsProvider: AssetProviderProtocol,
-                                       farmingService: DemeterFarmingServiceProtocol,
-                                       feeProvider: FeeProviderProtocol,
-                                       walletAssets: [AssetInfo]) -> UINavigationController? {
+    static func createInvestController(
+        walletContext: CommonWalletContextProtocol,
+        assetManager: AssetManagerProtocol,
+        networkFacade: WalletNetworkOperationFactoryProtocol?,
+        polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?,
+        poolsService: PoolsServiceInputProtocol,
+        accountSettings: WalletAccountSettingsProtocol,
+        assetsProvider: AssetProviderProtocol,
+        farmingService: DemeterFarmingServiceProtocol,
+        feeProvider: FeeProviderProtocol,
+        walletAssets: [AssetInfo],
+        dexService: DexInfoService
+    ) -> UINavigationController? {
         guard let selectedAccount = SelectedWalletSettings.shared.currentAccount,
               let connection = ChainRegistryFacade.sharedRegistry.getConnection(for: Chain.sora.genesisHash()),
               let runtimeRegistry = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: Chain.sora.genesisHash()) else {
@@ -557,28 +586,31 @@ extension MainTabBarViewFactory {
             type: selectedAccount.networkType
         ).toHex(includePrefix: true)) ?? ""
         
-        let wireframe = ExploreWireframe(fiatService: fiatService,
-                                         itemFactory: itemFactory,
-                                         assetManager: assetManager,
-                                         marketCapService: marketCapService,
-                                         explorePoolsService: explorePoolsService,
-                                         apyService: APYService.shared,
-                                         assetViewModelFactory: factory,
-                                         poolsService: poolsService,
-                                         poolViewModelsFactory: poolFactory,
-                                         providerFactory: providerFactory,
-                                         networkFacade: networkFacade,
-                                         accountId: accountId,
-                                         address: selectedAccount.address,
-                                         polkaswapNetworkFacade: polkaswapNetworkFacade,
-                                         qrEncoder: qrEncoder,
-                                         sharingFactory: shareFactory,
-                                         referralFactory: referralFactory,
-                                         assetsProvider: assetsProvider,
-                                         farmingService: farmingService, 
-                                         poolViewModelsService: poolViewModelsService, 
-                                         feeProvider: feeProvider, 
-                                         walletService: WalletService(operationFactory: walletContext.networkOperationFactory))
+        let wireframe = ExploreWireframe(
+            fiatService: fiatService,
+            itemFactory: itemFactory,
+            assetManager: assetManager,
+            marketCapService: marketCapService,
+            explorePoolsService: explorePoolsService,
+            apyService: APYService.shared,
+            assetViewModelFactory: factory,
+            poolsService: poolsService,
+            poolViewModelsFactory: poolFactory,
+            providerFactory: providerFactory,
+            networkFacade: networkFacade,
+            accountId: accountId,
+            address: selectedAccount.address,
+            polkaswapNetworkFacade: polkaswapNetworkFacade,
+            qrEncoder: qrEncoder,
+            sharingFactory: shareFactory,
+            referralFactory: referralFactory,
+            assetsProvider: assetsProvider,
+            farmingService: farmingService,
+            poolViewModelsService: poolViewModelsService,
+            feeProvider: feeProvider,
+            walletService: WalletService(operationFactory: walletContext.networkOperationFactory),
+            dexService: dexService
+        )
         
         let assetViewModelsService = ExploreAssetViewModelService(marketCapService: marketCapService,
                                                                   fiatService: fiatService,
@@ -632,7 +664,8 @@ extension MainTabBarViewFactory {
         walletContext: CommonWalletContextProtocol,
         assetManager: AssetManagerProtocol,
         assetsProvider: AssetProviderProtocol,
-        localizationManager: LocalizationManagerProtocol = LocalizationManager.shared
+        localizationManager: LocalizationManagerProtocol = LocalizationManager.shared,
+        dexService: DexInfoService
     ) -> UIViewController? {
         guard let connection = ChainRegistryFacade.sharedRegistry.getConnection(for: Chain.sora.genesisHash()) else {
             return nil
@@ -642,14 +675,19 @@ extension MainTabBarViewFactory {
         
         let marketCapService = MarketCapService.shared
         
-        guard let swapController = SwapViewFactory.createView(selectedTokenId: WalletAssetId.xor.rawValue,
-                                                              selectedSecondTokenId: "",
-                                                              assetManager: assetManager,
-                                                              fiatService: FiatService.shared,
-                                                              networkFacade: walletContext.networkOperationFactory,
-                                                              polkaswapNetworkFacade: polkaswapContext,
-                                                              assetsProvider: assetsProvider,
-                                                              marketCapService: marketCapService) else { return nil }
+        guard let swapController = SwapViewFactory.createView(
+            selectedTokenId: WalletAssetId.xor.rawValue,
+            selectedSecondTokenId: "",
+            assetManager: assetManager,
+            fiatService: FiatService.shared,
+            networkFacade: walletContext.networkOperationFactory,
+            polkaswapNetworkFacade: polkaswapContext,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            dexService: dexService
+        ) else {
+            return nil
+        }
         
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.commonAssets(preferredLanguages: locale.rLanguages)

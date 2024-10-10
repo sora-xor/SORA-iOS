@@ -50,6 +50,10 @@ protocol PoolListWireframeProtocol {
 }
 
 final class PoolListWireframe: PoolListWireframeProtocol {
+    private let dexService: DexInfoService
+    init(dexService: DexInfoService) {
+        self.dexService = dexService
+    }
     @MainActor
     func showPoolDetails(on viewController: UIViewController?,
                          poolInfo: PoolInfo,
@@ -63,17 +67,20 @@ final class PoolListWireframe: PoolListWireframeProtocol {
                          farmingService: DemeterFarmingServiceProtocol,
                          feeProvider: FeeProviderProtocol,
                          dismissHandler: (() -> Void)?) {
-        guard let assetDetailsController = PoolDetailsViewFactory.createView(poolInfo: poolInfo,
-                                                                             assetManager: assetManager,
-                                                                             fiatService: fiatService,
-                                                                             poolsService: poolsService,
-                                                                             providerFactory: providerFactory,
-                                                                             operationFactory: operationFactory,
-                                                                             assetsProvider: assetsProvider,
-                                                                             marketCapService: marketCapService, 
-                                                                             farmingService: farmingService, 
-                                                                             feeProvider: feeProvider,
-                                                                             dismissHandler: dismissHandler) else {
+        guard let assetDetailsController = PoolDetailsViewFactory.createView(
+            poolInfo: poolInfo,
+            assetManager: assetManager,
+            fiatService: fiatService,
+            poolsService: poolsService,
+            providerFactory: providerFactory,
+            operationFactory: operationFactory,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService, 
+            farmingService: farmingService, 
+            feeProvider: feeProvider,
+            dexService: dexService,
+            dismissHandler: dismissHandler
+        ) else {
             return
         }
         

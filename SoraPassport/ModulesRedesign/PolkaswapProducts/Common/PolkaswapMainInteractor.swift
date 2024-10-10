@@ -40,14 +40,15 @@ final class PolkaswapMainInteractor {
     var polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?
     let operationManager: OperationManagerProtocol // = OperationManagerFacade.sharedManager
     var eventCenter: EventCenterProtocol
+    let dexService: DexInfoService
 
     var xykPoolSubscriptionIds: [UInt16] = []
     var tbcPoolSubscriptionIds: [UInt16] = []
 
-    init(operationManager: OperationManagerProtocol, eventCenter: EventCenterProtocol) {
+    init(operationManager: OperationManagerProtocol, eventCenter: EventCenterProtocol, dexService: DexInfoService) {
         self.operationManager = operationManager
         self.eventCenter = eventCenter
-
+        self.dexService = dexService
     }
 
     func setup() {
@@ -81,8 +82,8 @@ extension PolkaswapMainInteractor: PolkaswapMainInteractorInputProtocol {
         }
     }
 
-    func checkIsPathAvailable(fromAssetId: String, toAssetId: String) {
-        guard let operation = polkaswapNetworkFacade?.createIsSwapPossibleOperation(dexId: xorDexID,
+    func checkIsPathAvailable(fromAssetId: String, toAssetId: String, dexId: UInt32) {
+        guard let operation = polkaswapNetworkFacade?.createIsSwapPossibleOperation(dexId: dexId,
                                                                                     from: fromAssetId,
                                                                                     to: toAssetId) else {
             return
@@ -97,8 +98,8 @@ extension PolkaswapMainInteractor: PolkaswapMainInteractorInputProtocol {
         operationManager.enqueue(operations: [operation], in: .blockAfter)
     }
 
-    func loadMarketSources(fromAssetId: String, toAssetId: String) {
-        guard let operation = polkaswapNetworkFacade?.createGetAvailableMarketAlgorithmsOperation(dexId: xorDexID,
+    func loadMarketSources(fromAssetId: String, toAssetId: String, dexId: UInt32) {
+        guard let operation = polkaswapNetworkFacade?.createGetAvailableMarketAlgorithmsOperation(dexId: dexId,
                                                                                                   from: fromAssetId,
                                                                                                   to: toAssetId) else {
             return
@@ -114,49 +115,54 @@ extension PolkaswapMainInteractor: PolkaswapMainInteractorInputProtocol {
     }
 
     func quote(params: PolkaswapMainInteractorQuoteParams) {
-        let dexs: [UInt32] = [xorDexID, xstusdDexID]
-        let operations: [(operation: JSONRPCOperation<[JSONAny], SwapValues>, dexId: UInt32)] = dexs.compactMap { [weak self] dexId in
-            guard let networkFacade = self?.polkaswapNetworkFacade else { return nil }
-            let operation = networkFacade.createRecalculationOfSwapValuesOperation(
-                dexId: dexId,
-                from: params.fromAssetId,
-                to: params.toAssetId,
-                amount: params.amount,
-                swapVariant: params.swapVariant,
-                liquiditySources: params.liquiditySources,
-                filterMode: params.filterMode)
-            return (operation, dexId)
-        }
+        Task { [weak self] in
+            guard let self else { return } 
+            let dexs: [DexId] = (try? await dexService.dexInfos()) ?? []
+            let dexIds: [UInt32] = dexs.map { $0.id }
+            let operations: [(operation: JSONRPCOperation<[JSONAny], SwapValues>, dexId: UInt32)] = dexIds.compactMap { [weak self] dexId in
+                guard let networkFacade = self?.polkaswapNetworkFacade else { return nil }
+                let operation = networkFacade.createRecalculationOfSwapValuesOperation(
+                    dexId: dexId,
+                    from: params.fromAssetId,
+                    to: params.toAssetId,
+                    amount: params.amount,
+                    swapVariant: params.swapVariant,
+                    liquiditySources: params.liquiditySources,
+                    filterMode: params.filterMode)
+                return (operation, dexId)
+            }
 
-        let mergeOperation: BaseOperation<(quote: SwapValues?, dexId: UInt32)> = ClosureOperation {
-            let quotes: [(quote: SwapValues?, dexId: UInt32)?] = operations.map { (quote: try? $0.operation.extractResultData(), dexId: $0.dexId) }
+            let mergeOperation: BaseOperation<(quote: SwapValues?, dexId: UInt32)> = ClosureOperation {
+                let quotes: [(quote: SwapValues?, dexId: UInt32)?] = operations.map { (quote: try? $0.operation.extractResultData(), dexId: $0.dexId) }
 
-            if params.swapVariant == .desiredInput {
-                let quote = quotes.compactMap { $0?.quote }.max {
-                    (Decimal(string: $0.amount) ?? Decimal(0)) < (Decimal(string: $1.amount) ?? Decimal(0))
+                if params.swapVariant == .desiredInput {
+                    let quote = quotes.compactMap { $0?.quote }.max {
+                        (Decimal(string: $0.amount) ?? Decimal(0)) < (Decimal(string: $1.amount) ?? Decimal(0))
+                    }
+                    let dexId = quotes.first(where: { $0?.quote == quote })??.dexId ?? 0
+                    return (quote, dexId)
                 }
+                
+                let quote = quotes.compactMap { $0?.quote }.max {
+                    (Decimal(string: $0.amount) ?? Decimal(0)) > (Decimal(string: $1.amount) ?? Decimal(0))
+                }
+                
                 let dexId = quotes.first(where: { $0?.quote == quote })??.dexId ?? 0
                 return (quote, dexId)
             }
-            
-            let quote = quotes.compactMap { $0?.quote }.max {
-                (Decimal(string: $0.amount) ?? Decimal(0)) > (Decimal(string: $1.amount) ?? Decimal(0))
-            }
-            let dexId = quotes.first(where: { $0?.quote == quote })??.dexId ?? 0
-            return (quote, dexId)
-        }
 
-        for operation in operations {
-            mergeOperation.addDependency(operation.operation)
-        }
-        
-        mergeOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard let self = self, let quote = try? mergeOperation.extractResultData() else { return }
-                self.presenter.didLoadQuote(quote.quote, dexId: quote.dexId, params: params)
+            for operation in operations {
+                mergeOperation.addDependency(operation.operation)
             }
+            
+            mergeOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, let quote = try? mergeOperation.extractResultData() else { return }
+                    self.presenter.didLoadQuote(quote.quote, dexId: quote.dexId, params: params)
+                }
+            }
+            operationManager.enqueue(operations: [mergeOperation] + operations.map { $0.operation }, in: .blockAfter)
         }
-        operationManager.enqueue(operations: [mergeOperation] + operations.map { $0.operation }, in: .blockAfter)
     }
 
     func loadBalance(asset: AssetInfo) {

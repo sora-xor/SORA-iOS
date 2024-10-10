@@ -44,12 +44,16 @@ final class PoolDetailsViewFactory {
                            marketCapService: MarketCapServiceProtocol,
                            farmingService: DemeterFarmingServiceProtocol,
                            feeProvider: FeeProviderProtocol,
+                           dexService: DexInfoService,
                            dismissHandler: (() -> Void)?) -> PoolDetailsViewController? {
-        let wireframe = PoolDetailsWireframe(feeProvider: feeProvider,
-                                             providerFactory: providerFactory,
-                                             operationFactory: operationFactory, 
-                                             assetsProvider: assetsProvider,
-                                             marketCapService: marketCapService)
+        let wireframe = PoolDetailsWireframe(
+            feeProvider: feeProvider,
+            providerFactory: providerFactory,
+            operationFactory: operationFactory, 
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            dexService: dexService
+        )
         
         let detailsFactory = DetailViewModelFactory(assetManager: assetManager)
         

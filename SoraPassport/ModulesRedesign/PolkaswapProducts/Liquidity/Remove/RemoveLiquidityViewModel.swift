@@ -215,6 +215,7 @@ final class RemoveLiquidityViewModel {
     private var farms: [UserFarm] = []
     private var warningViewModelFactory: WarningViewModelFactory
     private var marketCapService: MarketCapServiceProtocol
+    private let dexService: DexInfoService
     private var stackedPercentage: Decimal {
         return farms.map {
             let accountPoolBalance = poolInfo?.accountPoolBalance ?? .zero
@@ -247,7 +248,8 @@ final class RemoveLiquidityViewModel {
         assetsProvider: AssetProviderProtocol?,
         farmingService: DemeterFarmingServiceProtocol,
         warningViewModelFactory: WarningViewModelFactory = WarningViewModelFactory(),
-        marketCapService: MarketCapServiceProtocol
+        marketCapService: MarketCapServiceProtocol,
+        dexService: DexInfoService
     ) {
         self.poolInfo = poolInfo
         self.apyService = apyService
@@ -264,6 +266,7 @@ final class RemoveLiquidityViewModel {
         self.farms = farms
         self.warningViewModelFactory = warningViewModelFactory
         self.marketCapService = marketCapService
+        self.dexService = dexService
     }
 }
 
@@ -376,16 +379,24 @@ extension RemoveLiquidityViewModel: LiquidityViewModelProtocol {
     
     func reviewButtonTapped() {
         guard let poolInfo = poolInfo, let assetManager = assetManager else { return }
-        wireframe?.showRemoveLiquidityConfirmation(on: view?.controller.navigationController,
-                                                   poolInfo: poolInfo,
-                                                   assetManager: assetManager,
-                                                   firstAssetAmount: inputedFirstAmount,
-                                                   secondAssetAmount: inputedSecondAmount,
-                                                   slippageTolerance: slippageTolerance,
-                                                   details: details,
-                                                   fee: fee,
-                                                   operationFactory: operationFactory,
-                                                   completionHandler: completionHandler)
+        Task {
+            let dexId = (try? await dexService.getDexInfo(for: poolInfo.baseAssetId)) ?? 0
+            DispatchQueue.main.async {
+                self.wireframe?.showRemoveLiquidityConfirmation(
+                    on: self.view?.controller.navigationController,
+                    poolInfo: poolInfo,
+                    assetManager: assetManager,
+                    firstAssetAmount: self.inputedFirstAmount,
+                    secondAssetAmount: self.inputedSecondAmount,
+                    slippageTolerance: self.slippageTolerance,
+                    details: self.details,
+                    fee: self.fee,
+                    operationFactory: self.operationFactory,
+                    dexId: dexId,
+                    completionHandler: self.completionHandler
+                )
+            }
+        }
     }
     
     func recalculate(field: FocusedField) {
@@ -461,20 +472,22 @@ extension RemoveLiquidityViewModel {
         guard !firstAssetId.isEmpty, !secondAssetId.isEmpty else {
             return
         }
-
-        poolsService?.isPairPresentedInNetwork(baseAssetId: firstAssetId,
-                                               targetAssetId: secondAssetId,
-                                               accountId: "",
-                                               completion: { [weak self] isPresented in
-            self?.isPairPresented = isPresented
-        })
         
-        poolsService?.isPairEnabled(baseAssetId: firstAssetId,
-                                    targetAssetId: secondAssetId,
-                                    accountId: "",
-                                    completion: { [weak self] isEnabled in
-            self?.isPairEnabled = isEnabled
-        })
+        Task {
+            isPairPresented = await poolsService?.isPairPresentedInNetwork(
+                baseAssetId: firstAssetId,
+                targetAssetId: secondAssetId,
+                accountId: ""
+            ) ?? false
+        }
+
+        Task {
+            isPairEnabled = await poolsService?.isPairEnabled(
+                baseAssetId: firstAssetId,
+                targetAssetId: secondAssetId,
+                accountId: ""
+            ) ?? false
+        }
     }
     
     func updateDetails() {

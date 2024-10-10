@@ -33,8 +33,8 @@ import Foundation
 
 protocol PolkaswapMainInteractorInputProtocol: AnyObject {
     func networkFeeValue(completion: @escaping (Decimal) -> Void)
-    func checkIsPathAvailable(fromAssetId: String, toAssetId: String)
-    func loadMarketSources(fromAssetId: String, toAssetId: String)
+    func checkIsPathAvailable(fromAssetId: String, toAssetId: String, dexId: UInt32)
+    func loadMarketSources(fromAssetId: String, toAssetId: String, dexId: UInt32)
     func quote(params: PolkaswapMainInteractorQuoteParams)
     func loadBalance(asset: AssetInfo)
     func unsubscribePoolXYK()

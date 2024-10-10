@@ -40,7 +40,9 @@ protocol LiquidityViewFactoryProtocol: AnyObject {
                            poolsService: PoolsServiceInputProtocol,
                            operationFactory: WalletNetworkOperationFactoryProtocol,
                            assetsProvider: AssetProviderProtocol?,
-                           marketCapService: MarketCapServiceProtocol) -> PolkaswapViewController?
+                           marketCapService: MarketCapServiceProtocol,
+                           dexService: DexInfoService
+    ) -> PolkaswapViewController?
     
     static func createRemoveLiquidityView(poolInfo: PoolInfo,
                                           farms: [UserFarm],
@@ -52,17 +54,22 @@ protocol LiquidityViewFactoryProtocol: AnyObject {
                                           assetsProvider: AssetProviderProtocol?,
                                           marketCapService: MarketCapServiceProtocol,
                                           farmingService: DemeterFarmingServiceProtocol,
-                                          completionHandler: (() -> Void)?) -> PolkaswapViewController?
+                                          dexService: DexInfoService,
+                                          completionHandler: (() -> Void)?
+    ) -> PolkaswapViewController?
 }
 
 final class LiquidityViewFactory: LiquidityViewFactoryProtocol {
-    static func createView(poolInfo: PoolInfo?,
-                           assetManager: AssetManagerProtocol,
-                           fiatService: FiatServiceProtocol,
-                           poolsService: PoolsServiceInputProtocol,
-                           operationFactory: WalletNetworkOperationFactoryProtocol,
-                           assetsProvider: AssetProviderProtocol?,
-                           marketCapService: MarketCapServiceProtocol) -> PolkaswapViewController? {
+    static func createView(
+        poolInfo: PoolInfo?,
+        assetManager: AssetManagerProtocol,
+        fiatService: FiatServiceProtocol,
+        poolsService: PoolsServiceInputProtocol,
+        operationFactory: WalletNetworkOperationFactoryProtocol,
+        assetsProvider: AssetProviderProtocol?,
+        marketCapService: MarketCapServiceProtocol,
+        dexService: DexInfoService
+    ) -> PolkaswapViewController? {
         let viewModel = SupplyLiquidityViewModel(
             wireframe: LiquidityWireframe(),
             poolInfo: poolInfo,
@@ -73,7 +80,9 @@ final class LiquidityViewFactory: LiquidityViewFactoryProtocol {
             detailsFactory: DetailViewModelFactory(assetManager: assetManager),
             operationFactory: operationFactory,
             assetsProvider: assetsProvider,
-            marketCapService: marketCapService)
+            marketCapService: marketCapService,
+            dexService: dexService
+        )
         
         let view = PolkaswapViewController(viewModel: viewModel)
         viewModel.view = view
@@ -90,8 +99,8 @@ final class LiquidityViewFactory: LiquidityViewFactoryProtocol {
                                           assetsProvider: AssetProviderProtocol?,
                                           marketCapService: MarketCapServiceProtocol,
                                           farmingService: DemeterFarmingServiceProtocol,
+                                          dexService: DexInfoService,
                                           completionHandler: (() -> Void)?) -> PolkaswapViewController? {
-        guard let engine = ChainRegistryFacade.sharedRegistry.getConnection(for: Chain.sora.genesisHash()) else { return nil }
         let viewModel = RemoveLiquidityViewModel(
             wireframe: LiquidityWireframe(),
             poolInfo: poolInfo,
@@ -105,7 +114,9 @@ final class LiquidityViewFactory: LiquidityViewFactoryProtocol {
             operationFactory: operationFactory,
             assetsProvider: assetsProvider,
             farmingService: farmingService,
-            marketCapService: marketCapService)
+            marketCapService: marketCapService,
+            dexService: dexService
+        )
         viewModel.completionHandler = completionHandler
         
         let view = PolkaswapViewController(viewModel: viewModel)

@@ -159,10 +159,15 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         
         let polkaswapContext = PolkaswapNetworkOperationFactory(engine: connection)
         
-        let poolsService = AccountPoolsService(operationManager: OperationManagerFacade.sharedManager,
-                                       networkFacade: walletContext.networkOperationFactory,
-                                       polkaswapNetworkFacade: polkaswapContext,
-                                       config: ApplicationConfig.shared)
+        let dexService = DexInfoServiceDefault(engine: connection)
+        
+        let poolsService = AccountPoolsService(
+            operationManager: OperationManagerFacade.sharedManager,
+            networkFacade: walletContext.networkOperationFactory,
+            polkaswapNetworkFacade: polkaswapContext,
+            config: ApplicationConfig.shared,
+            dexService: dexService
+        )
         farmingService.poolsService = poolsService
         
         let factory = PoolViewModelFactory(walletAssets: assetInfos,
@@ -178,29 +183,35 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         poolsService.appendDelegate(delegate: editViewService)
 
         let feeProvider = FeeProvider()
-
-        let redesignViewController = MainTabBarViewFactory.createWalletRedesignController(walletContext: walletContext,
-                                                                                          assetManager: assetManager,
-                                                                                          poolsService: poolsService,
-                                                                                          assetsProvider: assetsProvider,
-                                                                                          poolsViewModelService: poolsViewModelService,
-                                                                                          assetsViewModelService: assetsViewModelService,
-                                                                                          editViewService: editViewService, 
-                                                                                          accountSettings: accountSettings,
-                                                                                          farmingService: farmingService, 
-                                                                                          feeProvider: feeProvider,
-                                                                                          localizationManager: LocalizationManager.shared)
-
-        let investController = MainTabBarViewFactory.createInvestController(walletContext: walletContext,
-                                                                            assetManager: assetManager,
-                                                                            networkFacade: walletContext.networkOperationFactory,
-                                                                            polkaswapNetworkFacade: polkaswapContext,
-                                                                            poolsService: poolsService,
-                                                                            accountSettings: accountSettings,
-                                                                            assetsProvider: assetsProvider,
-                                                                            farmingService: farmingService, 
-                                                                            feeProvider: feeProvider,
-                                                                            walletAssets: assetInfos)
+        
+        let redesignViewController = MainTabBarViewFactory.createWalletRedesignController(
+            walletContext: walletContext,
+            assetManager: assetManager,
+            poolsService: poolsService,
+            assetsProvider: assetsProvider,
+            poolsViewModelService: poolsViewModelService,
+            assetsViewModelService: assetsViewModelService,
+            editViewService: editViewService,
+            accountSettings: accountSettings,
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            dexService: dexService,
+            localizationManager: LocalizationManager.shared
+        )
+        
+        let investController = MainTabBarViewFactory.createInvestController(
+            walletContext: walletContext,
+            assetManager: assetManager,
+            networkFacade: walletContext.networkOperationFactory,
+            polkaswapNetworkFacade: polkaswapContext,
+            poolsService: poolsService,
+            accountSettings: accountSettings,
+            assetsProvider: assetsProvider,
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            walletAssets: assetInfos,
+            dexService: dexService
+        )
 
         guard let tabBarController = view as? UITabBarController else {
             return
@@ -229,10 +240,15 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
         
         if var viewcontrollers = tabBarController.viewControllers {
             view?.middleButtonHadler = {
-                guard let swapViewController = MainTabBarViewFactory.createSwapController(walletContext: walletContext,
-                                                                                          assetManager: assetManager,
-                                                                                          assetsProvider: assetsProvider,
-                                                                                          localizationManager: LocalizationManager.shared) else { return }
+                guard let swapViewController = MainTabBarViewFactory.createSwapController(
+                    walletContext: walletContext,
+                    assetManager: assetManager,
+                    assetsProvider: assetsProvider,
+                    localizationManager: LocalizationManager.shared,
+                    dexService: dexService
+                ) else {
+                    return
+                }
                 
                 guard let containerView = MainTabBarViewFactory.swapDisclamerController(completion: {
                     UserDefaults.standard.set(true, forKey: "isDisclamerShown")

@@ -147,9 +147,11 @@ protocol RedesignWalletWireframeProtocol: AlertPresentable {
 final class RedesignWalletWireframe: RedesignWalletWireframeProtocol {
     
     let feeProvider: FeeProviderProtocol
+    let dexService: DexInfoService
     
-    init(feeProvider: FeeProviderProtocol) {
+    init(feeProvider: FeeProviderProtocol, dexService: DexInfoService) {
         self.feeProvider = feeProvider
+        self.dexService = dexService
     }
 
     func showSoraCard(
@@ -186,7 +188,7 @@ final class RedesignWalletWireframe: RedesignWalletWireframeProtocol {
                             marketCapService: MarketCapServiceProtocol,
                             farmingService: DemeterFarmingServiceProtocol,
                             updateHandler: ((UpdatedSection) -> Void)?) {
-        let wireframe = AssetListWireframe(feeProvider: feeProvider)
+        let wireframe = AssetListWireframe(feeProvider: feeProvider, dexService: dexService)
         let viewModel = ManageAssetListViewModel(assetViewModelFactory: assetViewModelFactory,
                                                  fiatService: fiatService,
                                                  assetManager: assetManager,
@@ -242,6 +244,7 @@ final class RedesignWalletWireframe: RedesignWalletWireframeProtocol {
                                           marketCapService: marketCapService,
                                           farmingService: farmingService, 
                                           feeProvider: feeProvider,
+                                          dexService: dexService,
                                           updateHandler: updateHandler)
         
         poolsService.appendDelegate(delegate: viewModel)
@@ -277,24 +280,27 @@ final class RedesignWalletWireframe: RedesignWalletWireframeProtocol {
                           assetsProvider: AssetProviderProtocol,
                           marketCapService: MarketCapServiceProtocol,
                           farmingService: DemeterFarmingServiceProtocol) {
-        guard let assetDetailsController = AssetDetailsViewFactory.createView(assetInfo: assetInfo,
-                                                                              assetManager: assetManager,
-                                                                              fiatService: fiatService,
-                                                                              assetViewModelFactory: assetViewModelFactory,
-                                                                              poolsService: poolsService,
-                                                                              poolViewModelsFactory: poolViewModelsFactory,
-                                                                              providerFactory: providerFactory,
-                                                                              networkFacade: networkFacade,
-                                                                              accountId: accountId,
-                                                                              address: address,
-                                                                              polkaswapNetworkFacade: polkaswapNetworkFacade,
-                                                                              qrEncoder: qrEncoder,
-                                                                              sharingFactory: sharingFactory,
-                                                                              referralFactory: referralFactory,
-                                                                              assetsProvider: assetsProvider,
-                                                                              marketCapService: marketCapService,
-                                                                              farmingService: farmingService, 
-                                                                              feeProvider: feeProvider) else {
+        guard let assetDetailsController = AssetDetailsViewFactory.createView(
+            assetInfo: assetInfo,
+            assetManager: assetManager,
+            fiatService: fiatService,
+            assetViewModelFactory: assetViewModelFactory,
+            poolsService: poolsService,
+            poolViewModelsFactory: poolViewModelsFactory,
+            providerFactory: providerFactory,
+            networkFacade: networkFacade,
+            accountId: accountId,
+            address: address,
+            polkaswapNetworkFacade: polkaswapNetworkFacade,
+            qrEncoder: qrEncoder,
+            sharingFactory: sharingFactory,
+            referralFactory: referralFactory,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            dexService: dexService
+        ) else {
             return
         }
         
@@ -316,17 +322,20 @@ final class RedesignWalletWireframe: RedesignWalletWireframeProtocol {
                          assetsProvider: AssetProviderProtocol,
                          marketCapService: MarketCapServiceProtocol,
                          farmingService: DemeterFarmingServiceProtocol) {
-        guard let assetDetailsController = PoolDetailsViewFactory.createView(poolInfo: poolInfo,
-                                                                             assetManager: assetManager,
-                                                                             fiatService: fiatService,
-                                                                             poolsService: poolsService,
-                                                                             providerFactory: providerFactory,
-                                                                             operationFactory: operationFactory,
-                                                                             assetsProvider: assetsProvider,
-                                                                             marketCapService: marketCapService,
-                                                                             farmingService: farmingService, 
-                                                                             feeProvider: feeProvider,
-                                                                             dismissHandler: nil) else {
+        guard let assetDetailsController = PoolDetailsViewFactory.createView(
+            poolInfo: poolInfo,
+            assetManager: assetManager,
+            fiatService: fiatService,
+            poolsService: poolsService,
+            providerFactory: providerFactory,
+            operationFactory: operationFactory,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            dexService: dexService,
+            dismissHandler: nil
+        ) else {
             return
         }
         

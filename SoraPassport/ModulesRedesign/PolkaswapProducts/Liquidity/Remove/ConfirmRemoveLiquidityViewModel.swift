@@ -49,6 +49,7 @@ final class ConfirmRemoveLiquidityViewModel {
     var details: [DetailViewModel]
     let fee: Decimal
     let walletService: WalletServiceProtocol
+    private let dexId: UInt32
     
     var title: String? {
         return R.string.localizable.removePoolConfirmationTitle(preferredLanguages: .currentLocale)
@@ -67,7 +68,8 @@ final class ConfirmRemoveLiquidityViewModel {
         slippageTolerance: Float,
         details: [DetailViewModel],
         walletService: WalletServiceProtocol,
-        fee: Decimal
+        fee: Decimal,
+        dexId: UInt32
     ) {
         self.poolInfo = poolInfo
         self.wireframe = wireframe
@@ -79,6 +81,7 @@ final class ConfirmRemoveLiquidityViewModel {
         self.fee = fee
         self.walletService = walletService
         self.slippageTolerance = slippageTolerance
+        self.dexId = dexId
     }
 }
 
@@ -148,10 +151,9 @@ extension ConfirmRemoveLiquidityViewModel {
             value: AmountDecimal(value: fee),
             feeDescription: networkFeeDescription
         )
-
+        
         let shareOfPool = details.first(where: { $0.title == Constants.apyTitle })?.assetAmountText.text
         let apy = details.first(where: { $0.title == Constants.apyTitle })?.assetAmountText.text
-        let dexId = (assetManager.assetInfo(for: poolInfo.baseAssetId)?.isFeeAsset ?? false) ? "0" : "1"
         let context: [String: String] = [
             TransactionContextKeys.transactionType: TransactionType.liquidityRemoval.rawValue,
             TransactionContextKeys.firstAssetAmount: AmountDecimal(value: firstAssetAmount).stringValue,
@@ -161,9 +163,9 @@ extension ConfirmRemoveLiquidityViewModel {
             TransactionContextKeys.shareOfPool: shareOfPool ?? "",
             TransactionContextKeys.slippage: String(slippageTolerance),
             TransactionContextKeys.sbApy: apy ?? "",
-            TransactionContextKeys.dex: dexId
+            TransactionContextKeys.dex: String(dexId)
         ]
-
+        
         let transferInfo = TransferInfo(
             source: poolInfo.baseAssetId,
             destination: poolInfo.targetAssetId,
@@ -177,7 +179,7 @@ extension ConfirmRemoveLiquidityViewModel {
         wireframe?.showActivityIndicator()
         walletService.transfer(info: transferInfo, runCompletionIn: .main) { [weak self] (optionalResult) in
             self?.wireframe?.hideActivityIndicator()
-
+            
             if let result = optionalResult {
                 self?.handleTransfer(result: result)
             }

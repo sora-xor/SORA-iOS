@@ -116,7 +116,7 @@ final class SwapViewModel {
             
             if !firstAssetId.isEmpty, !secondAssetId.isEmpty {
                 marketSourcer = SwapMarketSourcer(fromAssetId: firstAssetId, toAssetId: secondAssetId)
-                interactor.checkIsPathAvailable(fromAssetId: firstAssetId, toAssetId: secondAssetId)
+                interactor.checkIsPathAvailable(fromAssetId: firstAssetId, toAssetId: secondAssetId, dexId: dexId)
                 loadQuote()
             }
         }
@@ -132,7 +132,7 @@ final class SwapViewModel {
             
             if !firstAssetId.isEmpty, !secondAssetId.isEmpty {
                 marketSourcer = SwapMarketSourcer(fromAssetId: firstAssetId, toAssetId: secondAssetId)
-                interactor.checkIsPathAvailable(fromAssetId: firstAssetId, toAssetId: secondAssetId)
+                interactor.checkIsPathAvailable(fromAssetId: firstAssetId, toAssetId: secondAssetId, dexId: dexId)
                 loadQuote()
             }
         }
@@ -231,6 +231,7 @@ final class SwapViewModel {
     private weak var assetsProvider: AssetProviderProtocol?
     private var lpServiceFee: LPFeeServiceProtocol
     private let marketCapService: MarketCapServiceProtocol
+    private let dexService: DexInfoService
     
     private var warningViewModelFactory: WarningViewModelFactory
     private var warningViewModel: WarningViewModel? {
@@ -268,7 +269,8 @@ final class SwapViewModel {
         lpServiceFee: LPFeeServiceProtocol,
         polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?,
         warningViewModelFactory: WarningViewModelFactory = WarningViewModelFactory(),
-        marketCapService: MarketCapServiceProtocol
+        marketCapService: MarketCapServiceProtocol,
+        dexService: DexInfoService
     ) {
         self.assetsProvider = assetsProvider
         self.fiatService = fiatService
@@ -285,6 +287,7 @@ final class SwapViewModel {
         self.polkaswapNetworkFacade = polkaswapNetworkFacade
         self.warningViewModelFactory = warningViewModelFactory
         self.marketCapService = marketCapService
+        self.dexService = dexService
         self.eventCenter.add(observer: self)
     }
 }
@@ -432,7 +435,9 @@ extension SwapViewModel: LiquidityViewModelProtocol {
                                         quoteParams: quoteParams,
                                         assetsProvider: assetsProvider,
                                         fiatData: fiatData,
-                                        polkaswapNetworkFacade: polkaswapNetworkFacade)
+                                        polkaswapNetworkFacade: polkaswapNetworkFacade,
+                                        dexService: dexService
+        )
     }
     
     func recalculate(field: FocusedField) {}
@@ -446,7 +451,7 @@ extension SwapViewModel: PolkaswapMainInteractorOutputProtocol {
             view?.setupButton(isEnabled: false)
         } else {
             view?.setupMarketButton(isLoadingState: true)
-            interactor.loadMarketSources(fromAssetId: fromAssetId, toAssetId: toAssetId)
+            interactor.loadMarketSources(fromAssetId: fromAssetId, toAssetId: toAssetId, dexId: dexId)
         }
     }
     

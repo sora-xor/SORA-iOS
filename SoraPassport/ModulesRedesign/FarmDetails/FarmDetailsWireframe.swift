@@ -64,13 +64,18 @@ final class FarmDetailsWireframe: FarmDetailsWireframeProtocol {
     private let feeProvider: FeeProviderProtocol
     private let walletService: WalletServiceProtocol
     private let assetManager: AssetManagerProtocol
+    private let dexService: DexInfoService
     
-    init(feeProvider: FeeProviderProtocol,
+    init(
+        feeProvider: FeeProviderProtocol,
          walletService: WalletServiceProtocol,
-         assetManager: AssetManagerProtocol) {
+         assetManager: AssetManagerProtocol,
+         dexService: DexInfoService
+    ) {
         self.feeProvider = feeProvider
         self.walletService = walletService
         self.assetManager = assetManager
+        self.dexService = dexService
     }
     
     @MainActor func showPoolDetails(on controller: UIViewController?,
@@ -88,17 +93,20 @@ final class FarmDetailsWireframe: FarmDetailsWireframeProtocol {
             let assetsProvider,
             let fiatService,
             let operationFactory,
-            let poolDetailsController = PoolDetailsViewFactory.createView(poolInfo: poolInfo,
-                                                                          assetManager: assetManager,
-                                                                          fiatService: fiatService,
-                                                                          poolsService: poolsService,
-                                                                          providerFactory: providerFactory,
-                                                                          operationFactory: operationFactory,
-                                                                          assetsProvider: assetsProvider,
-                                                                          marketCapService: marketCapService,
-                                                                          farmingService: farmingService,
-                                                                          feeProvider: feeProvider,
-                                                                          dismissHandler: nil) else {
+            let poolDetailsController = PoolDetailsViewFactory.createView(
+                poolInfo: poolInfo,
+                assetManager: assetManager,
+                fiatService: fiatService,
+                poolsService: poolsService,
+                providerFactory: providerFactory,
+                operationFactory: operationFactory,
+                assetsProvider: assetsProvider,
+                marketCapService: marketCapService,
+                farmingService: farmingService,
+                feeProvider: feeProvider,
+                dexService: dexService,
+                dismissHandler: nil
+            ) else {
             return
         }
         

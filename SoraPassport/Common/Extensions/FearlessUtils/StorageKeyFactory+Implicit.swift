@@ -211,4 +211,8 @@ extension StorageKeyFactoryProtocol {
         try createStorageKey(moduleName: "DemeterFarmingPlatform",
                              storageName: "TokenInfos")
     }
+    
+    func dexInfosKeys() throws -> Data {
+        try createStorageKey(moduleName: "DEXManager", storageName: "DEXInfos")
+    }
  }

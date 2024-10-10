@@ -65,7 +65,8 @@ protocol LiquidityWireframeProtocol: AlertPresentable {
         details: [DetailViewModel],
         transactionType: TransactionType,
         fee: Decimal,
-        operationFactory: WalletNetworkOperationFactoryProtocol
+        operationFactory: WalletNetworkOperationFactoryProtocol,
+        dexId: UInt32
     )
     
     
@@ -79,6 +80,7 @@ protocol LiquidityWireframeProtocol: AlertPresentable {
         details: [DetailViewModel],
         fee: Decimal,
         operationFactory: WalletNetworkOperationFactoryProtocol,
+        dexId: UInt32,
         completionHandler: (() -> Void)?
     )
     
@@ -102,7 +104,9 @@ protocol LiquidityWireframeProtocol: AlertPresentable {
         quoteParams: PolkaswapMainInteractorQuoteParams,
         assetsProvider: AssetProviderProtocol?,
         fiatData: [FiatData],
-        polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?)
+        polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?,
+        dexService: DexInfoService
+    )
 }
 
 final class LiquidityWireframe: LiquidityWireframeProtocol {
@@ -168,20 +172,24 @@ final class LiquidityWireframe: LiquidityWireframeProtocol {
         details: [DetailViewModel],
         transactionType: TransactionType,
         fee: Decimal,
-        operationFactory: WalletNetworkOperationFactoryProtocol
+        operationFactory: WalletNetworkOperationFactoryProtocol,
+        dexId: UInt32
     ) {
 
-        let viewModel = ConfirmSupplyLiquidityViewModel(wireframe: ConfirmWireframe(),
-                                                        baseAssetId: baseAssetId,
-                                                        targetAssetId: targetAssetId,
-                                                        assetManager: assetManager,
-                                                        firstAssetAmount: firstAssetAmount,
-                                                        secondAssetAmount: secondAssetAmount,
-                                                        slippageTolerance: slippageTolerance,
-                                                        details: details,
-                                                        transactionType: transactionType,
-                                                        fee: fee,
-                                                        walletService: WalletService(operationFactory: operationFactory))
+        let viewModel = ConfirmSupplyLiquidityViewModel(
+            wireframe: ConfirmWireframe(),
+            baseAssetId: baseAssetId,
+            targetAssetId: targetAssetId,
+            assetManager: assetManager,
+            firstAssetAmount: firstAssetAmount,
+            secondAssetAmount: secondAssetAmount,
+            slippageTolerance: slippageTolerance,
+            details: details,
+            transactionType: transactionType,
+            fee: fee,
+            walletService: WalletService(operationFactory: operationFactory),
+            dexId: dexId
+        )
         let view = ConfirmViewController(viewModel: viewModel)
         viewModel.view = view
         controller?.pushViewController(view, animated: true)
@@ -197,6 +205,7 @@ final class LiquidityWireframe: LiquidityWireframeProtocol {
         details: [DetailViewModel],
         fee: Decimal,
         operationFactory: WalletNetworkOperationFactoryProtocol,
+        dexId: UInt32,
         completionHandler: (() -> Void)?
     ) {
 
@@ -208,7 +217,8 @@ final class LiquidityWireframe: LiquidityWireframeProtocol {
                                                         slippageTolerance: slippageTolerance,
                                                         details: details,
                                                         walletService: WalletService(operationFactory: operationFactory),
-                                                        fee: fee)
+                                                        fee: fee,
+                                                        dexId: dexId)
         viewModel.completionHandler = completionHandler
         let view = ConfirmViewController(viewModel: viewModel)
         viewModel.view = view
@@ -235,10 +245,15 @@ final class LiquidityWireframe: LiquidityWireframeProtocol {
         quoteParams: PolkaswapMainInteractorQuoteParams,
         assetsProvider: AssetProviderProtocol?,
         fiatData: [FiatData],
-        polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?) {
+        polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?,
+        dexService: DexInfoService
+    ) {
             guard let networkFacade = networkFacade else { return }
-            let interactor = PolkaswapMainInteractor(operationManager: OperationManager(),
-                                                     eventCenter: eventCenter)
+            let interactor = PolkaswapMainInteractor(
+                operationManager: OperationManager(),
+                eventCenter: eventCenter,
+                dexService: dexService
+            )
             interactor.polkaswapNetworkFacade = polkaswapNetworkFacade
             let viewModel = ConfirmSwapViewModel(wireframe: ConfirmWireframe(),
                                                  firstAssetId: baseAssetId,

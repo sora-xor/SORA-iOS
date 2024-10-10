@@ -67,6 +67,14 @@ protocol StorageRequestFactoryProtocol {
         at blockHash: Data?
     )
         -> CompoundOperationWrapper<[StorageResponse<T>]> where T: Decodable
+    
+    func queryItemsByPrefix<T>(
+        engine: JSONRPCEngine,
+        keys: @escaping () throws -> [Data],
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        storagePath: StorageCodingPath,
+        at blockHash: Data?
+    ) -> CompoundOperationWrapper<[StorageResponse<T>]> where T: Decodable
 }
 
 final class StorageRequestFactory: StorageRequestFactoryProtocol {
@@ -278,6 +286,111 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
             targetOperation: queryWrapper.targetOperation,
             dependencies: dependencies
         )
+    }
+    
+    func queryItemsByPrefix<T>(
+        engine: JSONRPCEngine,
+        keys: @escaping () throws -> [Data],
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        storagePath: StorageCodingPath,
+        at blockHash: Data?
+    ) -> CompoundOperationWrapper<[StorageResponse<T>]> where T: Decodable {
+        let queryKeysOperation = createQueryByPrefixOperation(for: keys, engine: engine)
+
+        let fetchedKeys: () throws -> [Data] = {
+            try queryKeysOperation.extractNoCancellableResultData()
+                .compactMap { $0 }.reduce([], +)
+                .compactMap { try Data(hexStringSSF: $0) }
+        }
+
+        let queryOperation = createQueryOperation(for: fetchedKeys, at: blockHash, engine: engine)
+
+        let decodingOperation = StorageFallbackDecodingListOperation<T>(path: storagePath)
+        decodingOperation.configurationBlock = {
+            do {
+                let result = try queryOperation.extractNoCancellableResultData().flatMap { $0 }
+                print("OLOLO1 result \(result)")
+                decodingOperation.codingFactory = try factory()
+
+                decodingOperation.dataList = result
+                    .flatMap { StorageUpdateData(update: $0).changes }
+                    .map(\.value)
+            } catch {
+                print("OLOLO1 decodingOperation result \(error)")
+                decodingOperation.result = .failure(error)
+            }
+        }
+        
+        decodingOperation.completionBlock = {
+            let result = try? decodingOperation.extractResultData()
+            print("OLOLO1 decodingOperation result \(result)")
+        }
+
+        decodingOperation.addDependency(queryOperation)
+        queryOperation.addDependency(queryKeysOperation)
+
+        let mergeOperation = createMergeOperation(
+            dependingOn: queryOperation,
+            decodingOperation: decodingOperation,
+            keys: keys
+        )
+
+        mergeOperation.addDependency(decodingOperation)
+
+        let dependencies = [queryOperation, decodingOperation, queryKeysOperation]
+
+        return CompoundOperationWrapper(
+            targetOperation: mergeOperation,
+            dependencies: dependencies
+        )
+    }
+    
+    private func createQueryByPrefixOperation(
+        for keys: @escaping () throws -> [Data],
+        engine: JSONRPCEngine
+    ) -> BaseOperation<[[String]]> {
+        OperationCombiningService<[String]>(
+            operationManager: operationManager
+        ) {
+            let keys = try keys()
+
+            let itemsPerPage = 1000
+            let pageCount = (keys.count % itemsPerPage == 0) ?
+                keys.count / itemsPerPage : (keys.count / itemsPerPage + 1)
+
+            let wrappers: [CompoundOperationWrapper<[String]>] = try (0 ..< pageCount)
+                .map { pageIndex in
+                    let pageStart = pageIndex * itemsPerPage
+                    let pageEnd = pageStart + itemsPerPage
+                    let subkeys = (pageEnd < keys.count)
+                        ? Array(keys[pageStart ..< pageEnd])
+                        : Array(keys.suffix(from: pageStart))
+
+                    guard let key = subkeys.first?.toHex(includePrefix: true) else {
+                        throw BaseOperationError.unexpectedDependentResult
+                    }
+
+                    print("OLOLO2 key \(key)")
+                    let request = PagedKeysRequest(key: key)
+
+                    let queryOperation = JSONRPCOperation<PagedKeysRequest, [String]>(
+                        engine: engine,
+                        method: RPCMethod.getStorageKeysPaged,
+                        parameters: request
+                    )
+
+                    return CompoundOperationWrapper(targetOperation: queryOperation)
+                }
+
+            if !wrappers.isEmpty {
+                for index in 1 ..< wrappers.count {
+                    wrappers[index].allOperations
+                        .forEach { $0.addDependency(wrappers[0].targetOperation) }
+                }
+            }
+
+            return wrappers
+        }.longrunOperation()
     }
 }
 

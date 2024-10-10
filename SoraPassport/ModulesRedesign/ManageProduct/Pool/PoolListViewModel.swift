@@ -93,7 +93,7 @@ final class PoolListViewModel {
     var poolViewModelFactory: PoolViewModelFactory
     var fiatService: FiatServiceProtocol
     var poolsService: PoolsServiceInputProtocol?
-    var wireframe: PoolListWireframeProtocol = PoolListWireframe()
+    var wireframe: PoolListWireframeProtocol
     var providerFactory: BalanceProviderFactory
     weak var view: UIViewController?
     var operationFactory: WalletNetworkOperationFactoryProtocol
@@ -113,6 +113,7 @@ final class PoolListViewModel {
          marketCapService: MarketCapServiceProtocol,
          farmingService: DemeterFarmingServiceProtocol,
          feeProvider: FeeProviderProtocol,
+         dexService: DexInfoService,
          updateHandler: ((UpdatedSection) -> Void)?
     ) {
         self.poolViewModelFactory = poolViewModelFactory
@@ -126,6 +127,7 @@ final class PoolListViewModel {
         self.farmingService = farmingService
         self.feeProvider = feeProvider
         self.updateHandler = updateHandler
+        self.wireframe = PoolListWireframe(dexService: dexService)
     }
     func dismissIfNeeded() {
         if poolItems.isEmpty {

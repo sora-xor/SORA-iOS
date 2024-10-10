@@ -245,6 +245,7 @@
 		361EF5A029155DC000D0DCCF /* RedesignWalletViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361EF59F29155DC000D0DCCF /* RedesignWalletViewFactory.swift */; };
 		361EF5A829157D6D00D0DCCF /* Debouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361EF5A729157D6D00D0DCCF /* Debouncer.swift */; };
 		361EF5AB2917DCA500D0DCCF /* WalletItemFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361EF5AA2917DCA500D0DCCF /* WalletItemFactory.swift */; };
+		361F8FE02CB7C6840017E513 /* DexInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361F8FDF2CB7C6840017E513 /* DexInfoService.swift */; };
 		3621B45429E5523D007C5156 /* LPFeeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3621B45329E5523C007C5156 /* LPFeeService.swift */; };
 		362853D22B466CE1007BEA37 /* PoolDetailsItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 362853D12B466CE1007BEA37 /* PoolDetailsItemService.swift */; };
 		36286019291F935C0000A561 /* InputAssetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36286018291F935C0000A561 /* InputAssetsView.swift */; };
@@ -1691,6 +1692,7 @@
 		361EF59F29155DC000D0DCCF /* RedesignWalletViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RedesignWalletViewFactory.swift; sourceTree = "<group>"; };
 		361EF5A729157D6D00D0DCCF /* Debouncer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debouncer.swift; sourceTree = "<group>"; };
 		361EF5AA2917DCA500D0DCCF /* WalletItemFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletItemFactory.swift; sourceTree = "<group>"; };
+		361F8FDF2CB7C6840017E513 /* DexInfoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DexInfoService.swift; sourceTree = "<group>"; };
 		3621B45329E5523C007C5156 /* LPFeeService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPFeeService.swift; sourceTree = "<group>"; };
 		362853D12B466CE1007BEA37 /* PoolDetailsItemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolDetailsItemService.swift; sourceTree = "<group>"; };
 		36286018291F935C0000A561 /* InputAssetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAssetsView.swift; sourceTree = "<group>"; };
@@ -3334,6 +3336,7 @@
 		02623EF92179D0B50011250E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				361F8FDE2CB7C6200017E513 /* DEX */,
 				36E34F832BA05489005A44BC /* Legacy */,
 				369E10C12B91DF230097DB61 /* IconGenerator */,
 				3618AE532AC43C5D00F582BD /* PriceInfo */,
@@ -4151,6 +4154,14 @@
 				3618AE4F2AC35C7300F582BD /* MainScreenPoolView.swift */,
 			);
 			path = Pools;
+			sourceTree = "<group>";
+		};
+		361F8FDE2CB7C6200017E513 /* DEX */ = {
+			isa = PBXGroup;
+			children = (
+				361F8FDF2CB7C6840017E513 /* DexInfoService.swift */,
+			);
+			path = DEX;
 			sourceTree = "<group>";
 		};
 		3628601A291F96FE0000A561 /* PolkaswapProducts */ = {
@@ -8455,6 +8466,7 @@
 				36E5CF10295B46200098D4D2 /* WelcomeBackgroundViewController.swift in Sources */,
 				9441FAB525CAC44E00775559 /* AccountImportProtocols.swift in Sources */,
 				9481B478286EFC4600A472E2 /* RuntimeSyncService.swift in Sources */,
+				361F8FE02CB7C6840017E513 /* DexInfoService.swift in Sources */,
 				94497DD525EF89A700FD4F14 /* StakingLedger.swift in Sources */,
 				B77906262B282888003A2566 /* SupplyPoolItem.swift in Sources */,
 				94D4B66228C0AC6A007F98EB /* UserStorageVersion.swift in Sources */,

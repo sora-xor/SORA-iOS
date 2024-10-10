@@ -33,47 +33,53 @@ import RobinHood
 
 
 final class RedesignWalletViewFactory {
-    static func createView(providerFactory: BalanceProviderFactory,
-                           assetManager: AssetManagerProtocol,
-                           fiatService: FiatServiceProtocol,
-                           farmingService: DemeterFarmingServiceProtocol,
-                           networkFacade: WalletNetworkOperationFactoryProtocol,
-                           accountId: String,
-                           address: String,
-                           polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol,
-                           qrEncoder: WalletQREncoderProtocol,
-                           sharingFactory: AccountShareFactoryProtocol,
-                           poolsService: PoolsServiceInputProtocol,
-                           referralFactory: ReferralsOperationFactoryProtocol,
-                           assetsProvider: AssetProviderProtocol,
-                           walletContext: CommonWalletContextProtocol,
-                           poolsViewModelService: PoolsItemService,
-                           assetsViewModelService: AssetsItemService,
-                           marketCapService: MarketCapServiceProtocol,
-                           editViewService: EditViewServiceProtocol,
-                           feeProvider: FeeProviderProtocol) -> RedesignWalletViewController {
+    static func createView(
+        providerFactory: BalanceProviderFactory,
+        assetManager: AssetManagerProtocol,
+        fiatService: FiatServiceProtocol,
+        farmingService: DemeterFarmingServiceProtocol,
+        networkFacade: WalletNetworkOperationFactoryProtocol,
+        accountId: String,
+        address: String,
+        polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol,
+        qrEncoder: WalletQREncoderProtocol,
+        sharingFactory: AccountShareFactoryProtocol,
+        poolsService: PoolsServiceInputProtocol,
+        referralFactory: ReferralsOperationFactoryProtocol,
+        assetsProvider: AssetProviderProtocol,
+        walletContext: CommonWalletContextProtocol,
+        poolsViewModelService: PoolsItemService,
+        assetsViewModelService: AssetsItemService,
+        marketCapService: MarketCapServiceProtocol,
+        editViewService: EditViewServiceProtocol,
+        feeProvider: FeeProviderProtocol,
+        dexService: DexInfoService
+    ) -> RedesignWalletViewController {
         
-        let wireframe = RedesignWalletWireframe(feeProvider: feeProvider)
-        let viewModel = RedesignWalletViewModel(wireframe: wireframe,
-                                                providerFactory: providerFactory,
-                                                assetManager: assetManager,
-                                                fiatService: fiatService,
-                                                farmingService: farmingService,
-                                                itemFactory: WalletItemFactory(),
-                                                networkFacade: networkFacade,
-                                                accountId: accountId,
-                                                address: address,
-                                                polkaswapNetworkFacade: polkaswapNetworkFacade,
-                                                qrEncoder: qrEncoder,
-                                                sharingFactory: sharingFactory,
-                                                poolsService: poolsService,
-                                                referralFactory: referralFactory,
-                                                assetsProvider: assetsProvider,
-                                                walletContext: walletContext,
-                                                editViewService: editViewService,
-                                                poolsViewModelService: poolsViewModelService,
-                                                assetsViewModelService: assetsViewModelService,
-                                                marketCapService: marketCapService)
+        let wireframe = RedesignWalletWireframe(feeProvider: feeProvider, dexService: dexService)
+        let viewModel = RedesignWalletViewModel(
+            wireframe: wireframe,
+            providerFactory: providerFactory,
+            assetManager: assetManager,
+            fiatService: fiatService,
+            farmingService: farmingService,
+            itemFactory: WalletItemFactory(),
+            networkFacade: networkFacade,
+            accountId: accountId,
+            address: address,
+            polkaswapNetworkFacade: polkaswapNetworkFacade,
+            qrEncoder: qrEncoder,
+            sharingFactory: sharingFactory,
+            poolsService: poolsService,
+            referralFactory: referralFactory,
+            assetsProvider: assetsProvider,
+            walletContext: walletContext,
+            editViewService: editViewService,
+            poolsViewModelService: poolsViewModelService,
+            assetsViewModelService: assetsViewModelService,
+            marketCapService: marketCapService,
+            dexService: dexService
+        )
         
         let view = RedesignWalletViewController(viewModel: viewModel)
         viewModel.view = view

@@ -47,6 +47,7 @@ final class SupplyLiquidityViewModel {
     var poolsService: PoolsServiceInputProtocol?
     let assetManager: AssetManagerProtocol?
     let detailsFactory: DetailViewModelFactoryProtocol
+    let dexService: DexInfoService
     
     let debouncer = Debouncer(interval: 0.8)
     
@@ -226,7 +227,9 @@ final class SupplyLiquidityViewModel {
     private lazy var firstLiquidityProviderWarningViewModel: WarningViewModel? = warningViewModelFactory.firstLiquidityProviderViewModel() {
         didSet {
             guard let firstLiquidityProviderWarningViewModel else { return }
-            view?.updateFirstLiquidityWarinignView(model: firstLiquidityProviderWarningViewModel)
+            DispatchQueue.main.async {
+                self.view?.updateFirstLiquidityWarinignView(model: firstLiquidityProviderWarningViewModel)
+            }
         }
     }
     
@@ -249,7 +252,8 @@ final class SupplyLiquidityViewModel {
         operationFactory: WalletNetworkOperationFactoryProtocol,
         assetsProvider: AssetProviderProtocol?,
         warningViewModelFactory: WarningViewModelFactory = WarningViewModelFactory(),
-        marketCapService: MarketCapServiceProtocol
+        marketCapService: MarketCapServiceProtocol,
+        dexService: DexInfoService
     ) {
         self.poolInfo = poolInfo
         self.fiatService = fiatService
@@ -263,6 +267,7 @@ final class SupplyLiquidityViewModel {
         self.assetsProvider = assetsProvider
         self.warningViewModelFactory = warningViewModelFactory
         self.marketCapService = marketCapService
+        self.dexService = dexService
     }
 }
 
@@ -410,19 +415,29 @@ extension SupplyLiquidityViewModel: LiquidityViewModelProtocol {
               !secondAssetId.isEmpty,
               let fiatService = fiatService,
               let assetManager = assetManager else { return }
-        wireframe?.showSupplyLiquidityConfirmation(on: view?.controller.navigationController,
-                                                   baseAssetId: firstAssetId,//.kensetsuCase,
-                                                   targetAssetId: secondAssetId,//.kensetsuCase,
-                                                   fiatService: fiatService,
-                                                   poolsService: poolsService,
-                                                   assetManager: assetManager,
-                                                   firstAssetAmount: inputedFirstAmount,
-                                                   secondAssetAmount: inputedSecondAmount,
-                                                   slippageTolerance: slippageTolerance,
-                                                   details: details,
-                                                   transactionType: transactionType,
-                                                   fee: fee,
-                                                   operationFactory: operationFactory)
+        
+        Task {
+            let dexId = (try? await dexService.getDexInfo(for: firstAssetId)) ?? 0
+            print("OLOLO \(try? await dexService.getDexInfo(for: firstAssetId))")
+            DispatchQueue.main.async {
+                self.wireframe?.showSupplyLiquidityConfirmation(
+                    on: self.view?.controller.navigationController,
+                    baseAssetId: self.firstAssetId,
+                    targetAssetId: self.secondAssetId,
+                    fiatService: fiatService,
+                    poolsService: self.poolsService,
+                    assetManager: assetManager,
+                    firstAssetAmount: self.inputedFirstAmount,
+                    secondAssetAmount: self.inputedSecondAmount,
+                    slippageTolerance: self.slippageTolerance,
+                    details: self.details,
+                    transactionType: self.transactionType,
+                    fee: self.fee,
+                    operationFactory: self.operationFactory,
+                    dexId: dexId
+                )
+            }
+        }
     }
     
     func recalculate(field: FocusedField) {
@@ -503,29 +518,22 @@ extension SupplyLiquidityViewModel {
         guard !firstAssetId.isEmpty, !secondAssetId.isEmpty else {
             return
         }
-        
-        let group = DispatchGroup()
 
-        group.enter()
-        poolsService?.isPairPresentedInNetwork(baseAssetId: firstAssetId.kensetsuCase,
-                                               targetAssetId: secondAssetId,
-                                               accountId: "",
-                                               completion: { [weak self] isPresented in
-            self?.isPairPresented = isPresented
-            group.leave()
-        })
-        
-        group.enter()
-        poolsService?.isPairEnabled(baseAssetId: firstAssetId.kensetsuCase,
-                                    targetAssetId: secondAssetId,
-                                    accountId: "",
-                                    completion: { [weak self] isEnabled in
-            self?.isPairEnabled = isEnabled
-            group.leave()
-        })
-        
-        group.notify(queue: .main) { [weak self] in
-            guard let self else { return }
+        Task {
+            async let isPresented = poolsService?.isPairPresentedInNetwork(
+                baseAssetId: firstAssetId.kensetsuCase,
+                targetAssetId: secondAssetId,
+                accountId: ""
+            ) ?? false
+            
+            async let isPairEnabled = poolsService?.isPairEnabled(
+                baseAssetId: firstAssetId.kensetsuCase,
+                targetAssetId: secondAssetId,
+                accountId: ""
+            ) ?? false
+            
+            (self.isPairPresented, self.isPairEnabled) = await (isPresented, isPairEnabled)
+            
             var isNeedWarning = false
 
             if !self.isPairPresented && !self.isPairEnabled {

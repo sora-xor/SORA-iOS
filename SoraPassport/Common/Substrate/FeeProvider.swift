@@ -73,7 +73,7 @@ final class FeeProvider: FeeProviderProtocol {
         
         let dexId = "0"
         
-        if let cached =  feeStore[type.rawValue] {
+        if let cached = feeStore[type.rawValue] {
             return cached
         }
         var builderClosure: ExtrinsicBuilderClosure?

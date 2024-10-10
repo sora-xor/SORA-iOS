@@ -6,7 +6,7 @@ import SoraFoundation
 extension RedesignWalletViewModel {
 
     @MainActor
-    internal func initSoraCard() -> SCard {
+    internal func initSoraCard(dexService: DexInfoService) -> SCard {
         guard SCard.shared == nil else {
             return SCard.shared!
         }
@@ -30,7 +30,7 @@ extension RedesignWalletViewModel {
                 self?.showReceiveController(in: vc)
             },
             onSwapController: { [weak self] vc in
-                self?.showSwapController(in: vc)
+                self?.showSwapController(in: vc, dexService: dexService)
             }
         )
 

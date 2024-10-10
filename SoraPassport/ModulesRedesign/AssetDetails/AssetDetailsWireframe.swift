@@ -73,6 +73,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
     private let sharingFactory: AccountShareFactoryProtocol 
     private let farmingService: DemeterFarmingServiceProtocol
     private let feeProvider: FeeProviderProtocol
+    private let dexService: DexInfoService
     
     init(
         accountId: String,
@@ -89,7 +90,8 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         qrEncoder: WalletQREncoderProtocol,
         sharingFactory: AccountShareFactoryProtocol,
         farmingService: DemeterFarmingServiceProtocol,
-        feeProvider: FeeProviderProtocol
+        feeProvider: FeeProviderProtocol,
+        dexService: DexInfoService
     ) {
         self.accountId = accountId
         self.address = address
@@ -106,6 +108,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         self.sharingFactory = sharingFactory
         self.farmingService = farmingService
         self.feeProvider = feeProvider
+        self.dexService = dexService
     }
     
 
@@ -171,15 +174,21 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         controller?.present(containerView, animated: true)
     }
     
-    @MainActor func showSwap() {
-        guard let swapController = SwapViewFactory.createView(selectedTokenId: assetInfo.assetId,
-                                                              selectedSecondTokenId: "",
-                                                              assetManager: assetManager,
-                                                              fiatService: fiatService,
-                                                              networkFacade: networkFacade,
-                                                              polkaswapNetworkFacade: polkaswapNetworkFacade,
-                                                              assetsProvider: assetsProvider,
-                                                              marketCapService: marketCapService) else { return }
+    @MainActor
+    func showSwap() {
+        guard let swapController = SwapViewFactory.createView(
+            selectedTokenId: assetInfo.assetId,
+            selectedSecondTokenId: "",
+            assetManager: assetManager,
+            fiatService: fiatService,
+            networkFacade: networkFacade,
+            polkaswapNetworkFacade: polkaswapNetworkFacade,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            dexService: dexService
+        ) else {
+            return
+        }
         let containerView = BlurViewController()
         containerView.modalPresentationStyle = .overFullScreen
         containerView.add(swapController)
@@ -256,17 +265,20 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
     @MainActor func showPoolDetails(poolInfo: PoolInfo,
                          poolsService: PoolsServiceInputProtocol) {
         guard let operationFactory = networkFacade,
-              let assetDetailsController = PoolDetailsViewFactory.createView(poolInfo: poolInfo,
-                                                                             assetManager: assetManager,
-                                                                             fiatService: fiatService,
-                                                                             poolsService: poolsService,
-                                                                             providerFactory: providerFactory,
-                                                                             operationFactory: operationFactory,
-                                                                             assetsProvider: assetsProvider,
-                                                                             marketCapService: marketCapService,
-                                                                             farmingService: farmingService,
-                                                                             feeProvider: feeProvider,
-                                                                             dismissHandler: nil) else {
+              let assetDetailsController = PoolDetailsViewFactory.createView(
+                poolInfo: poolInfo,
+                assetManager: assetManager,
+                fiatService: fiatService,
+                poolsService: poolsService,
+                providerFactory: providerFactory,
+                operationFactory: operationFactory,
+                assetsProvider: assetsProvider,
+                marketCapService: marketCapService,
+                farmingService: farmingService,
+                feeProvider: feeProvider,
+                dexService: dexService,
+                dismissHandler: nil
+              ) else {
             return
         }
         

@@ -98,6 +98,7 @@ final class RedesignWalletViewModel {
     let marketCapService: MarketCapServiceProtocol
     let poolsViewModelService: PoolsItemService
     let assetsViewModelService: AssetsItemService
+    let dexService: DexInfoService
     
     init(wireframe: RedesignWalletWireframeProtocol?,
          providerFactory: BalanceProviderFactory,
@@ -118,7 +119,9 @@ final class RedesignWalletViewModel {
          editViewService: EditViewServiceProtocol,
          poolsViewModelService: PoolsItemService,
          assetsViewModelService: AssetsItemService,
-         marketCapService: MarketCapServiceProtocol) {
+         marketCapService: MarketCapServiceProtocol,
+         dexService: DexInfoService
+    ) {
         self.wireframe = wireframe
         self.accountId = accountId
         self.address = address
@@ -145,6 +148,7 @@ final class RedesignWalletViewModel {
         self.editViewService = editViewService
         self.marketCapService = marketCapService
         self.poolsViewModelService = poolsViewModelService
+        self.dexService = dexService
         self.eventCenter.add(observer: self, dispatchIn: .main)
     }
 
@@ -224,7 +228,7 @@ extension RedesignWalletViewModel: RedesignWalletViewModelProtocol {
         }
         
         if enabledIds.contains(Cards.soraCard.id) {
-            let soraCard = initSoraCard()
+            let soraCard = initSoraCard(dexService: dexService)
             let soraCardItem: SoramitsuTableViewItemProtocol = itemFactory.createSoraCardItem(with: self,
                                                                                               service: soraCard)
             items.append(soraCardItem)
@@ -317,7 +321,7 @@ extension RedesignWalletViewModel: RedesignWalletViewModelProtocol {
         
         items.append(accountItem)
         
-        let soraCard = initSoraCard()
+        let soraCard = initSoraCard(dexService: dexService)
         let soraCardItem: SoramitsuTableViewItemProtocol = itemFactory.createSoraCardItem(with: self,
                                                                                           service: soraCard)
         items.append(soraCardItem)
@@ -395,15 +399,16 @@ extension RedesignWalletViewModel: RedesignWalletViewModelProtocol {
     }
 
     @MainActor
-    internal func showSwapController(in vc: UIViewController) {
-        guard let swapController = createSwapController(presenter: vc) else { return }
+    internal func showSwapController(in vc: UIViewController, dexService: DexInfoService) {
+        guard let swapController = createSwapController(presenter: vc, dexService: dexService) else { return }
         vc.present(swapController, animated: true)
     }
 
     @MainActor
     private func createSwapController(
         presenter: UIViewController,
-        localizationManager: LocalizationManagerProtocol = LocalizationManager.shared
+        localizationManager: LocalizationManagerProtocol = LocalizationManager.shared,
+        dexService: DexInfoService
     ) -> UIViewController? {
         guard let connection = ChainRegistryFacade.sharedRegistry.getConnection(for: Chain.sora.genesisHash()) else {
             return nil
@@ -426,15 +431,20 @@ extension RedesignWalletViewModel: RedesignWalletViewModelProtocol {
         }
 
         let polkaswapContext = PolkaswapNetworkOperationFactory(engine: connection)
-
-        guard let swapController = SwapViewFactory.createView(selectedTokenId: "",
-                                                              selectedSecondTokenId: WalletAssetId.xor.rawValue,
-                                                              assetManager: assetManager,
-                                                              fiatService: FiatService.shared,
-                                                              networkFacade: walletContext.networkOperationFactory,
-                                                              polkaswapNetworkFacade: polkaswapContext,
-                                                              assetsProvider: assetsProvider,
-                                                              marketCapService: marketCapService) else { return nil }
+        
+        guard let swapController = SwapViewFactory.createView(
+            selectedTokenId: "",
+            selectedSecondTokenId: WalletAssetId.xor.rawValue,
+            assetManager: assetManager,
+            fiatService: FiatService.shared,
+            networkFacade: walletContext.networkOperationFactory,
+            polkaswapNetworkFacade: polkaswapContext,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            dexService: dexService
+        ) else {
+            return nil
+        }
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.commonAssets(preferredLanguages: locale.rLanguages)

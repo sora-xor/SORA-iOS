@@ -43,9 +43,14 @@ final class SwapViewFactory {
         networkFacade: WalletNetworkOperationFactoryProtocol?,
         polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol?,
         assetsProvider: AssetProviderProtocol?,
-        marketCapService: MarketCapServiceProtocol) -> UIViewController? {
-        let interactor = PolkaswapMainInteractor(operationManager: OperationManager(),
-                                                 eventCenter: EventCenter.shared)
+        marketCapService: MarketCapServiceProtocol,
+        dexService: DexInfoService
+    ) -> UIViewController? {
+        let interactor = PolkaswapMainInteractor(
+            operationManager: OperationManager(),
+            eventCenter: EventCenter.shared,
+            dexService: dexService
+        )
         interactor.polkaswapNetworkFacade = polkaswapNetworkFacade
         let viewModel = SwapViewModel(
             selectedTokenId: selectedTokenId,
@@ -60,7 +65,9 @@ final class SwapViewFactory {
             assetsProvider: assetsProvider,
             lpServiceFee: LPFeeService(),
             polkaswapNetworkFacade: polkaswapNetworkFacade,
-            marketCapService: marketCapService)
+            marketCapService: marketCapService,
+            dexService: dexService
+        )
         
         interactor.presenter = viewModel
         

@@ -57,9 +57,11 @@ protocol AssetListWireframeProtocol {
 
 final class AssetListWireframe: AssetListWireframeProtocol {
     let feeProvider: FeeProviderProtocol
+    let dexService: DexInfoService
     
-    init(feeProvider: FeeProviderProtocol) {
+    init(feeProvider: FeeProviderProtocol, dexService: DexInfoService) {
         self.feeProvider = feeProvider
+        self.dexService = dexService
     }
     
     @MainActor func showAssetDetails(on viewController: UIViewController?,
@@ -80,24 +82,27 @@ final class AssetListWireframe: AssetListWireframeProtocol {
                           assetsProvider: AssetProviderProtocol?,
                           marketCapService: MarketCapServiceProtocol,
                           farmingService: DemeterFarmingServiceProtocol) {
-        guard let assetDetailsController = AssetDetailsViewFactory.createView(assetInfo: assetInfo,
-                                                                              assetManager: assetManager,
-                                                                              fiatService: fiatService,
-                                                                              assetViewModelFactory: assetViewModelFactory,
-                                                                              poolsService: poolsService,
-                                                                              poolViewModelsFactory: poolViewModelsFactory,
-                                                                              providerFactory: providerFactory,
-                                                                              networkFacade: networkFacade,
-                                                                              accountId: accountId,
-                                                                              address: address,
-                                                                              polkaswapNetworkFacade: polkaswapNetworkFacade,
-                                                                              qrEncoder: qrEncoder,
-                                                                              sharingFactory: sharingFactory,
-                                                                              referralFactory: referralFactory,
-                                                                              assetsProvider: assetsProvider,
-                                                                              marketCapService: marketCapService, 
-                                                                              farmingService: farmingService, 
-                                                                              feeProvider: feeProvider) else {
+        guard let assetDetailsController = AssetDetailsViewFactory.createView(
+            assetInfo: assetInfo,
+            assetManager: assetManager,
+            fiatService: fiatService,
+            assetViewModelFactory: assetViewModelFactory,
+            poolsService: poolsService,
+            poolViewModelsFactory: poolViewModelsFactory,
+            providerFactory: providerFactory,
+            networkFacade: networkFacade,
+            accountId: accountId,
+            address: address,
+            polkaswapNetworkFacade: polkaswapNetworkFacade,
+            qrEncoder: qrEncoder,
+            sharingFactory: sharingFactory,
+            referralFactory: referralFactory,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService, 
+            farmingService: farmingService, 
+            feeProvider: feeProvider,
+            dexService: dexService
+        ) else {
             return
         }
         

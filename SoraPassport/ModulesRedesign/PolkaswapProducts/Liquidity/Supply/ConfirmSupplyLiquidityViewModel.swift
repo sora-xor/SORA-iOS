@@ -60,6 +60,7 @@ final class ConfirmSupplyLiquidityViewModel {
     let transactionType: TransactionType
     let fee: Decimal
     let walletService: WalletServiceProtocol
+    let dexId: UInt32
     
     var title: String? {
         return R.string.localizable.addLiquidityConfirmationTitle(preferredLanguages: .currentLocale)
@@ -80,7 +81,8 @@ final class ConfirmSupplyLiquidityViewModel {
         details: [DetailViewModel],
         transactionType: TransactionType,
         fee: Decimal,
-        walletService: WalletServiceProtocol
+        walletService: WalletServiceProtocol,
+        dexId: UInt32
     ) {
         self.baseAssetId = baseAssetId
         self.targetAssetId = targetAssetId
@@ -93,6 +95,7 @@ final class ConfirmSupplyLiquidityViewModel {
         self.transactionType = transactionType
         self.fee = fee
         self.walletService = walletService
+        self.dexId = dexId
     }
 }
 
@@ -173,7 +176,6 @@ extension ConfirmSupplyLiquidityViewModel {
             feeDescription: networkFeeDescription
         )
 
-        let dexId = (assetManager.assetInfo(for: baseAssetId)?.isFeeAsset ?? false) || baseAssetId == WalletAssetId.kxor ? "0" : "1"
         let shareOfPool = details.first(where: { $0.title == Constants.apyTitle })?.assetAmountText.text ?? ""
         let apy = details.first(where: { $0.title == Constants.apyTitle })?.assetAmountText.text ?? ""
         
@@ -182,7 +184,7 @@ extension ConfirmSupplyLiquidityViewModel {
             TransactionContextKeys.firstAssetAmount: AmountDecimal(value: firstAssetAmount).stringValue,
             TransactionContextKeys.secondAssetAmount: AmountDecimal(value: secondAssetAmount).stringValue,
             TransactionContextKeys.slippage: String(slippageTolerance),
-            TransactionContextKeys.dex: dexId,
+            TransactionContextKeys.dex: String(dexId),
             TransactionContextKeys.shareOfPool: shareOfPool,
             TransactionContextKeys.sbApy: apy
         ]

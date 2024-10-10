@@ -64,18 +64,21 @@ final class PoolDetailsWireframe: PoolDetailsWireframeProtocol {
     private let operationFactory: WalletNetworkOperationFactoryProtocol
     private let assetsProvider: AssetProviderProtocol?
     private let marketCapService: MarketCapServiceProtocol
+    private let dexService: DexInfoService
     
     init(feeProvider: FeeProviderProtocol,
          providerFactory: BalanceProviderFactory,
          operationFactory: WalletNetworkOperationFactoryProtocol,
          assetsProvider: AssetProviderProtocol?,
-         marketCapService: MarketCapServiceProtocol
+         marketCapService: MarketCapServiceProtocol,
+         dexService: DexInfoService
     ) {
         self.feeProvider = feeProvider
         self.providerFactory = providerFactory
         self.operationFactory = operationFactory
         self.assetsProvider = assetsProvider
         self.marketCapService = marketCapService
+        self.dexService = dexService
     }
     
     @MainActor
@@ -89,28 +92,33 @@ final class PoolDetailsWireframe: PoolDetailsWireframeProtocol {
         fiatService: FiatServiceProtocol?,
         farmingService: DemeterFarmingServiceProtocol,
         completionHandler: (() -> Void)?) {
-            guard let fiatService = fiatService,
-                  let poolsService = poolsService else { return }
+            guard let fiatService = fiatService, let poolsService = poolsService else { return }
             
-            guard let assetDetailsController = type == .add ? LiquidityViewFactory.createView(poolInfo: poolInfo,
-                                                                                              assetManager: assetManager,
-                                                                                              fiatService: fiatService,
-                                                                                              poolsService: poolsService,
-                                                                                              operationFactory: operationFactory,
-                                                                                              assetsProvider: assetsProvider,
-                                                                                              marketCapService: marketCapService)
+            guard let assetDetailsController = type == .add ? LiquidityViewFactory.createView(
+                poolInfo: poolInfo,
+                assetManager: assetManager,
+                fiatService: fiatService,
+                poolsService: poolsService,
+                operationFactory: operationFactory,
+                assetsProvider: assetsProvider,
+                marketCapService: marketCapService,
+                dexService: dexService
+            )
                     :
-                        LiquidityViewFactory.createRemoveLiquidityView(poolInfo: poolInfo,
-                                                                       farms: farms,
-                                                                       assetManager: assetManager,
-                                                                       fiatService: fiatService,
-                                                                       poolsService: poolsService,
-                                                                       providerFactory: providerFactory,
-                                                                       operationFactory: operationFactory,
-                                                                       assetsProvider: assetsProvider,
-                                                                       marketCapService: marketCapService,
-                                                                       farmingService: farmingService,
-                                                                       completionHandler: completionHandler) else { return }
+                        LiquidityViewFactory.createRemoveLiquidityView(
+                            poolInfo: poolInfo,
+                            farms: farms,
+                            assetManager: assetManager,
+                            fiatService: fiatService,
+                            poolsService: poolsService,
+                            providerFactory: providerFactory,
+                            operationFactory: operationFactory,
+                            assetsProvider: assetsProvider,
+                            marketCapService: marketCapService,
+                            farmingService: farmingService,
+                            dexService: dexService,
+                            completionHandler: completionHandler
+                        ) else { return }
             
             
             
@@ -138,9 +146,12 @@ final class PoolDetailsWireframe: PoolDetailsWireframeProtocol {
     ) {
         let walletService = WalletService(operationFactory: operationFactory)
         
-        let wireframe = FarmDetailsWireframe(feeProvider: feeProvider,
-                                             walletService: walletService,
-                                             assetManager: assetManager)
+        let wireframe = FarmDetailsWireframe(
+            feeProvider: feeProvider,
+            walletService: walletService,
+            assetManager: assetManager,
+            dexService: dexService
+        )
         let userFarmService = UserFarmsService()
         
         let viewModel = FarmDetailsViewModel(farm: farm,

@@ -33,24 +33,27 @@ import RobinHood
 
 
 final class AssetDetailsViewFactory {
-    static func createView(assetInfo: AssetInfo,
-                           assetManager: AssetManagerProtocol,
-                           fiatService: FiatServiceProtocol,
-                           assetViewModelFactory: AssetViewModelFactory,
-                           poolsService: PoolsServiceInputProtocol,
-                           poolViewModelsFactory: PoolViewModelFactory,
-                           providerFactory: BalanceProviderFactory,
-                           networkFacade: WalletNetworkOperationFactoryProtocol?,
-                           accountId: String,
-                           address: String,
-                           polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol,
-                           qrEncoder: WalletQREncoderProtocol,
-                           sharingFactory: AccountShareFactoryProtocol,
-                           referralFactory: ReferralsOperationFactoryProtocol,
-                           assetsProvider: AssetProviderProtocol?,
-                           marketCapService: MarketCapServiceProtocol,
-                           farmingService: DemeterFarmingServiceProtocol,
-                           feeProvider: FeeProviderProtocol)
+    static func createView(
+        assetInfo: AssetInfo,
+        assetManager: AssetManagerProtocol,
+        fiatService: FiatServiceProtocol,
+        assetViewModelFactory: AssetViewModelFactory,
+        poolsService: PoolsServiceInputProtocol,
+        poolViewModelsFactory: PoolViewModelFactory,
+        providerFactory: BalanceProviderFactory,
+        networkFacade: WalletNetworkOperationFactoryProtocol?,
+        accountId: String,
+        address: String,
+        polkaswapNetworkFacade: PolkaswapNetworkOperationFactoryProtocol,
+        qrEncoder: WalletQREncoderProtocol,
+        sharingFactory: AccountShareFactoryProtocol,
+        referralFactory: ReferralsOperationFactoryProtocol,
+        assetsProvider: AssetProviderProtocol?,
+        marketCapService: MarketCapServiceProtocol,
+        farmingService: DemeterFarmingServiceProtocol,
+        feeProvider: FeeProviderProtocol,
+        dexService: DexInfoService
+    )
     -> AssetDetailsViewController? {
         guard let selectedAccount = SelectedWalletSettings.shared.currentAccount,
               let aseetList = assetManager.getAssetList(),
@@ -65,21 +68,24 @@ final class AssetDetailsViewFactory {
         let eventCenter = EventCenter.shared
         let priceInfoService = PriceInfoService.shared
 
-        let wireframe = AssetDetailsWireframe(accountId: accountId,
-                                              address: address,
-                                              assetManager: assetManager,
-                                              fiatService: fiatService,
-                                              eventCenter: eventCenter,
-                                              assetInfo: assetInfo,
-                                              providerFactory: providerFactory,
-                                              networkFacade: networkFacade,
-                                              polkaswapNetworkFacade: polkaswapNetworkFacade,
-                                              assetsProvider: assetsProvider,
-                                              marketCapService: marketCapService,
-                                              qrEncoder: qrEncoder,
-                                              sharingFactory: sharingFactory, 
-                                              farmingService: farmingService,
-                                              feeProvider: feeProvider)
+        let wireframe = AssetDetailsWireframe(
+            accountId: accountId,
+            address: address,
+            assetManager: assetManager,
+            fiatService: fiatService,
+            eventCenter: eventCenter,
+            assetInfo: assetInfo,
+            providerFactory: providerFactory,
+            networkFacade: networkFacade,
+            polkaswapNetworkFacade: polkaswapNetworkFacade,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            qrEncoder: qrEncoder,
+            sharingFactory: sharingFactory, 
+            farmingService: farmingService,
+            feeProvider: feeProvider,
+            dexService: dexService
+        )
         
         let recentActivityService = RecentActivityItemService(assetId: assetInfo.assetId,
                                                               viewModelFactory: viewModelFactory,

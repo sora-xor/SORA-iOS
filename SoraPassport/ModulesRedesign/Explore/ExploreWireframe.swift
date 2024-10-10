@@ -63,6 +63,7 @@ final class ExploreWireframe: ExploreWireframeProtocol {
     let poolViewModelsService: ExplorePoolsViewModelService
     let feeProvider: FeeProviderProtocol
     let walletService: WalletServiceProtocol
+    let dexService: DexInfoService
 
     init(
         fiatService: FiatServiceProtocol?,
@@ -86,7 +87,8 @@ final class ExploreWireframe: ExploreWireframeProtocol {
         farmingService: DemeterFarmingServiceProtocol,
         poolViewModelsService: ExplorePoolsViewModelService,
         feeProvider: FeeProviderProtocol,
-        walletService: WalletServiceProtocol
+        walletService: WalletServiceProtocol,
+        dexService: DexInfoService
     ) {
         
         self.fiatService = fiatService
@@ -111,6 +113,7 @@ final class ExploreWireframe: ExploreWireframeProtocol {
         self.poolViewModelsService = poolViewModelsService
         self.feeProvider = feeProvider
         self.walletService = walletService
+        self.dexService = dexService
     }
     
     @MainActor
@@ -118,24 +121,27 @@ final class ExploreWireframe: ExploreWireframeProtocol {
         guard let assetInfo = assetManager.assetInfo(for: assetId),
               let fiatService = fiatService,
               let polkaswapNetworkFacade = polkaswapNetworkFacade,
-              let assetDetailsController = AssetDetailsViewFactory.createView(assetInfo: assetInfo,
-                                                                              assetManager: assetManager,
-                                                                              fiatService: fiatService,
-                                                                              assetViewModelFactory: assetViewModelFactory,
-                                                                              poolsService: poolsService,
-                                                                              poolViewModelsFactory: poolViewModelsFactory,
-                                                                              providerFactory: providerFactory,
-                                                                              networkFacade: networkFacade,
-                                                                              accountId: accountId,
-                                                                              address: address,
-                                                                              polkaswapNetworkFacade: polkaswapNetworkFacade,
-                                                                              qrEncoder: qrEncoder,
-                                                                              sharingFactory: sharingFactory,
-                                                                              referralFactory: referralFactory,
-                                                                              assetsProvider: assetsProvider,
-                                                                              marketCapService: marketCapService,
-                                                                              farmingService: farmingService,
-                                                                              feeProvider: feeProvider) else {
+              let assetDetailsController = AssetDetailsViewFactory.createView(
+                assetInfo: assetInfo,
+                assetManager: assetManager,
+                fiatService: fiatService,
+                assetViewModelFactory: assetViewModelFactory,
+                poolsService: poolsService,
+                poolViewModelsFactory: poolViewModelsFactory,
+                providerFactory: providerFactory,
+                networkFacade: networkFacade,
+                accountId: accountId,
+                address: address,
+                polkaswapNetworkFacade: polkaswapNetworkFacade,
+                qrEncoder: qrEncoder,
+                sharingFactory: sharingFactory,
+                referralFactory: referralFactory,
+                assetsProvider: assetsProvider,
+                marketCapService: marketCapService,
+                farmingService: farmingService,
+                feeProvider: feeProvider,
+                dexService: dexService
+              ) else {
             return
         }
         
@@ -150,17 +156,20 @@ final class ExploreWireframe: ExploreWireframeProtocol {
     func showAccountPoolDetails(on viewController: UIViewController?, poolInfo: PoolInfo) {
         guard let fiatService = fiatService,
               let networkFacade = networkFacade,
-              let assetDetailsController = PoolDetailsViewFactory.createView(poolInfo: poolInfo,
-                                                                             assetManager: assetManager,
-                                                                             fiatService: fiatService,
-                                                                             poolsService: poolsService,
-                                                                             providerFactory: providerFactory,
-                                                                             operationFactory: networkFacade,
-                                                                             assetsProvider: assetsProvider,
-                                                                             marketCapService: marketCapService, 
-                                                                             farmingService: farmingService,
-                                                                             feeProvider: feeProvider,
-                                                                             dismissHandler: nil) else {
+              let assetDetailsController = PoolDetailsViewFactory.createView(
+                poolInfo: poolInfo,
+                assetManager: assetManager,
+                fiatService: fiatService,
+                poolsService: poolsService,
+                providerFactory: providerFactory,
+                operationFactory: networkFacade,
+                assetsProvider: assetsProvider,
+                marketCapService: marketCapService, 
+                farmingService: farmingService,
+                feeProvider: feeProvider,
+                dexService: dexService,
+                dismissHandler: nil
+              ) else {
             return
         }
         
@@ -181,13 +190,16 @@ final class ExploreWireframe: ExploreWireframeProtocol {
     func showLiquidity(on controller: UIViewController?) {
         guard let fiatService = fiatService, let networkFacade = networkFacade else { return }
         
-        guard let assetDetailsController = LiquidityViewFactory.createView(poolInfo: nil,
-                                                                           assetManager: assetManager,
-                                                                           fiatService: fiatService,
-                                                                           poolsService: poolsService,
-                                                                           operationFactory: networkFacade,
-                                                                           assetsProvider: assetsProvider,
-                                                                           marketCapService: marketCapService) else { return }
+        guard let assetDetailsController = LiquidityViewFactory.createView(
+            poolInfo: nil,
+            assetManager: assetManager,
+            fiatService: fiatService,
+            poolsService: poolsService,
+            operationFactory: networkFacade,
+            assetsProvider: assetsProvider,
+            marketCapService: marketCapService,
+            dexService: dexService
+        ) else { return }
         
         let containerView = BlurViewController()
         containerView.modalPresentationStyle = .overFullScreen
@@ -203,7 +215,12 @@ final class ExploreWireframe: ExploreWireframeProtocol {
     
     @MainActor
     func showFarmDetails(on viewController: UIViewController?, farm: Farm) {
-        let wireframe = FarmDetailsWireframe(feeProvider: feeProvider, walletService: walletService, assetManager: assetManager)
+        let wireframe = FarmDetailsWireframe(
+            feeProvider: feeProvider,
+            walletService: walletService,
+            assetManager: assetManager,
+            dexService: dexService
+        )
         let userFarmService = UserFarmsService()
         let viewModel = FarmDetailsViewModel(farm: farm,
                                              poolsService: poolsService,

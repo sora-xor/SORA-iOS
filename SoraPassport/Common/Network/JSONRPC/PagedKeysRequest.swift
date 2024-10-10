@@ -30,7 +30,7 @@
 
 import Foundation
 
-struct PagedKeysRequest: Encodable {
+struct PagedKeysRequest: Codable {
     let key: String
     let count: UInt32
     let offset: String?
