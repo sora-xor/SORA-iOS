@@ -47,6 +47,7 @@ final class ChainSyncService {
     let assetsUrl: URL?
     let repository: AnyDataProviderRepository<ChainModel>
     let dataFetchFactory: DataOperationFactoryProtocol
+    private let assetsRepository: CoreDataRepository<AssetInfo, CDAssetInfo>
     let eventCenter: EventCenterProtocol
     let retryStrategy: ReconnectionStrategyProtocol
     let operationQueue: OperationQueue
@@ -65,6 +66,7 @@ final class ChainSyncService {
         repository: AnyDataProviderRepository<ChainModel>,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
+        assetsRepository: CoreDataRepository<AssetInfo, CDAssetInfo>,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         logger: LoggerProtocol? = nil
     ) {
@@ -74,6 +76,7 @@ final class ChainSyncService {
         self.repository = repository
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
+        self.assetsRepository = assetsRepository
         self.retryStrategy = retryStrategy
         self.logger = logger
     }
@@ -101,28 +104,19 @@ final class ChainSyncService {
             return
         }
 
-        let remoteFetchAssetsOperation = dataFetchFactory.fetchData(from: assetsUrl)
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        let localAssetsOperation = assetsRepository.fetchAllOperation(with: RepositoryFetchOptions())
+        
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
-            let assets = AssetManager.networkAssets
-            let assetsRemoteData = try remoteFetchAssetsOperation.extractNoCancellableResultData()
-            let whiteList: [Whitelist] = try JSONDecoder().decode([Whitelist].self, from: assetsRemoteData)
+            var assets = try localAssetsOperation.extractNoCancellableResultData()
 
-            var filteredAssets: [AssetInfo] = []
-
-            for var asset in assets {
-                if let listed = whiteList.first(where: { (list) -> Bool in
-                    list.assetId == asset.assetId
-                }) {
-                    asset.icon = listed.icon
-                    asset.name = listed.name
-                    asset.symbol = listed.symbol
-                    filteredAssets.append(asset)
-                }
+            if assets.isEmpty {
+                assets = DefaultAssets.values
             }
-            Logger.shared.info("HANDLE ASSETS \(assets.count), whitelist: \(whiteList.count), result: \(filteredAssets.count)")
 
-            let typesSettings  = ChainModel.TypesSettings(url: typesUrl, overridesCommon: true)
+            Logger.shared.info("HANDLE ASSETS \(assets.count)")
+
+            let typesSettings = ChainModel.TypesSettings(url: typesUrl, overridesCommon: true)
             let defaultChain = ChainModel(chainId: Chain.sora.genesisHash(),
                                           name: Chain.sora.rawValue,
                                           nodes: ConfigService.shared.config.defaultNodes,
@@ -131,7 +125,7 @@ final class ChainSyncService {
                                           icon: nil,
                                           selectedNode: nil,
                                           iosMinAppVersion: nil)
-            let chainAssets = filteredAssets.map {
+            let chainAssets = assets.map {
                 ChainAssetModel(assetId: $0.assetId,
                                 staking: nil,
                                 purchaseProviders: nil,
@@ -145,7 +139,7 @@ final class ChainSyncService {
             remoteChains.forEach { chain in
                 chain.assets.forEach { chainAsset in
                     chainAsset.chain = chain
-                    if let asset = filteredAssets.first(where: { asset in
+                    if let asset = assets.first(where: { asset in
                         chainAsset.assetId == asset.assetId
                     }) {
                         chainAsset.asset = asset
@@ -181,7 +175,7 @@ final class ChainSyncService {
             return SyncChanges(newOrUpdatedItems: newOrUpdated, removedItems: removed)
         }
 
-        processingOperation.addDependency(remoteFetchAssetsOperation)
+        processingOperation.addDependency(localAssetsOperation)
         processingOperation.addDependency(localFetchOperation)
 
         let localSaveOperation = repository.saveOperation({
@@ -203,13 +197,14 @@ final class ChainSyncService {
         mapOperation.addDependency(localSaveOperation)
 
         mapOperation.completionBlock = { [weak self] in
+
             DispatchQueue.global(qos: .userInitiated).async {
                 self?.complete(result: mapOperation.result)
             }
         }
 
         operationQueue.addOperations([
-            remoteFetchAssetsOperation, localFetchOperation, processingOperation, localSaveOperation, mapOperation
+            localFetchOperation, localAssetsOperation, processingOperation, localSaveOperation, mapOperation
         ], waitUntilFinished: false)
     }
 

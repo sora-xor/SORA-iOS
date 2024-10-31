@@ -31,6 +31,14 @@
 import Foundation
 import SSFUtils
 
+final class WeakConnection {
+    var target: ChainConnection?
+
+    init(target: ChainConnection) {
+        self.target = target
+    }
+}
+
 protocol ConnectionPoolProtocol {
     func setupConnection(for chain: ChainModel) throws -> ChainConnection
     func setupConnection(for chain: ChainModel, ignoredUrl: URL?) throws -> ChainConnection
@@ -49,7 +57,7 @@ class ConnectionPool {
 
     private var mutex = NSLock()
 
-    private(set) var connectionsByChainIds: [ChainModel.Id: WeakWrapper] = [:]
+    private(set) var connectionsByChainIds: [ChainModel.Id: WeakConnection] = [:]
 
     private func clearUnusedConnections() {
         connectionsByChainIds = connectionsByChainIds.filter { $0.value.target != nil }
@@ -92,8 +100,8 @@ extension ConnectionPool: ConnectionPoolProtocol {
             }
         }
 
-        let connection = connectionFactory.createConnection(for: url, delegate: self)
-        let wrapper = WeakWrapper(target: connection)
+        let connection: ChainConnection = connectionFactory.createConnection(for: url, delegate: self)
+        let wrapper = WeakConnection(target: connection)
         Logger.shared.info("Connected node: \(url)")
         connectionsByChainIds[chain.chainId] = wrapper
 

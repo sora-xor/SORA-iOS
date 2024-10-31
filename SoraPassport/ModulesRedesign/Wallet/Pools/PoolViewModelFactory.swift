@@ -49,28 +49,23 @@ final class PoolViewModelFactory {
 extension PoolViewModelFactory {
     
     func createPoolViewModel(with pool: PoolInfo, fiatData: [FiatData], mode: WalletViewMode, priceTrend: Decimal? = nil) -> PoolViewModel? {
-        guard let baseAsset = walletAssets.first(where: { $0.identifier == pool.baseAssetId  }) else { return nil }
-        guard let targetAsset = walletAssets.first(where: { $0.identifier == pool.targetAssetId }) else { return nil }
-        
-        guard let baseAssetInfo = assetManager.assetInfo(for: baseAsset.identifier) else { return nil }
-        guard let targetAssetInfo = assetManager.assetInfo(for: targetAsset.identifier) else { return nil }
-        
-        guard let rewardAssetInfo = assetManager.assetInfo(for: WalletAssetId.pswap.rawValue) else { return nil }
-        
+        guard let baseAssetInfo = assetManager.assetInfo(for: pool.baseAssetId) else { return nil }
+        guard let targetAssetInfo = assetManager.assetInfo(for: pool.targetAssetId) else { return nil }
+        guard let rewardAssetInfo = assetManager.assetInfo(for: pool.baseAssetId) else { return nil }
         let isRTL = LocalizationManager.shared.isRightToLeft
         let baseBalance = NumberFormatter.cryptoAmounts.stringFromDecimal(pool.baseAssetPooledByAccount ?? Decimal(0)) ?? ""
         let targetBalance = NumberFormatter.cryptoAmounts.stringFromDecimal(pool.targetAssetPooledByAccount ?? Decimal(0)) ?? ""
         
         var fiatText = ""
-        if let firstPriceUsd = fiatData.first(where: { $0.id == baseAsset.identifier })?.priceUsd?.decimalValue,
-           let secondPriceUsd = fiatData.first(where: { $0.id == targetAsset.identifier })?.priceUsd?.decimalValue {
+        if let firstPriceUsd = fiatData.first(where: { $0.id == pool.baseAssetId })?.priceUsd?.decimalValue,
+           let secondPriceUsd = fiatData.first(where: { $0.id == pool.targetAssetId })?.priceUsd?.decimalValue {
             
             let fiatDecimal = (pool.baseAssetPooledByAccount ?? Decimal(0)) * firstPriceUsd + (pool.targetAssetPooledByAccount ?? Decimal(0)) * secondPriceUsd
             fiatText = "$" + (NumberFormatter.fiat.stringFromDecimal(fiatDecimal) ?? "")
         }
         
-        let title = isRTL ? "\(targetAsset.symbol)-\(baseAsset.symbol)" : "\(baseAsset.symbol)-\(targetAsset.symbol)"
-        let subtitle = isRTL ? "\(targetAsset.symbol) \(targetBalance) - \(baseAsset.symbol) \(baseBalance)" : "\(baseBalance) \(baseAsset.symbol) - \(targetBalance) \(targetAsset.symbol)"
+        let title = isRTL ? "\(targetAssetInfo.symbol)-\(baseAssetInfo.symbol)" : "\(baseAssetInfo.symbol)-\(targetAssetInfo.symbol)"
+        let subtitle = isRTL ? "\(targetAssetInfo.symbol) \(targetBalance) - \(baseAssetInfo.symbol) \(baseBalance)" : "\(baseBalance) \(baseAssetInfo.symbol) - \(targetBalance) \(targetAssetInfo.symbol)"
 
         var deltaArributedText: SoramitsuTextItem?
         if let priceTrend {

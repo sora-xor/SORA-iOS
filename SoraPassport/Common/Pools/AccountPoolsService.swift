@@ -115,7 +115,7 @@ final class AccountPoolsService {
     func setup() {
         unsubscribePoolsReserves()
         subscribeAccountPool(baseAssetId: WalletAssetId.xor.rawValue)
-        subscribeAccountPool(baseAssetId: WalletAssetId.xstusd.rawValue)
+        subscribeAccountPool(baseAssetId: WalletAssetId.xstusd)
         loadAccountPools()
     }
     

@@ -40,6 +40,7 @@ class CommonTypesSyncService {
     let url: URL?
     let filesOperationFactory: RuntimeFilesOperationFactoryProtocol
     let dataOperationFactory: DataOperationFactoryProtocol
+    let fileRepository: FileRepositoryProtocol
     let eventCenter: EventCenterProtocol
     let retryStrategy: ReconnectionStrategyProtocol
     let operationQueue: OperationQueue
@@ -61,6 +62,7 @@ class CommonTypesSyncService {
         dataOperationFactory: DataOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
+        fileRepository: FileRepositoryProtocol,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         dataHasher: StorageHasher = .twox256
     ) {
@@ -71,6 +73,7 @@ class CommonTypesSyncService {
         self.retryStrategy = retryStrategy
         self.operationQueue = operationQueue
         self.dataHasher = dataHasher
+        self.fileRepository = fileRepository
     }
 
     private func performSyncUpIfNeeded(with dataHasher: StorageHasher) {
@@ -85,19 +88,21 @@ class CommonTypesSyncService {
 
         isSyncing = true
 
-        let fetchOperation = dataOperationFactory.fetchData(from: url)
+
+        let filePath = ApplicationConfig.shared.commonTypesPath ?? ""
+        let localFileOperation = fileRepository.readOperation(at: filePath)
+        
         let saveOperation = filesOperationFactory.saveCommonTypesOperation {
-            try fetchOperation.extractNoCancellableResultData()
+            try localFileOperation.extractNoCancellableResultData() ?? Data()
         }
 
-        saveOperation.addDependency(operations: [fetchOperation])
+        saveOperation.addDependency(operations: [localFileOperation])
 
         saveOperation.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     _ = try saveOperation.targetOperation.extractNoCancellableResultData()
-                    let data = try fetchOperation.extractNoCancellableResultData()
-
+                    let data = try localFileOperation.extractNoCancellableResultData() ?? Data()
                     let remoteHash = try dataHasher.hash(data: data)
 
                     self?.handleCompletion(with: remoteHash)
@@ -108,7 +113,7 @@ class CommonTypesSyncService {
         }
 
         operationQueue.addOperations(
-            [fetchOperation] + saveOperation.allOperations,
+            [localFileOperation] + saveOperation.allOperations,
             waitUntilFinished: false
         )
     }

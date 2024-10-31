@@ -48,7 +48,8 @@ final class SplashPresenterFactory {
         let presenter = SplashPresenter(window: window)
         let interactor = SplashInteractor(settings: SettingsManager.shared,
                                           socketService: WebSocketService.shared,
-                                          configService: ConfigService.shared)
+                                          configService: ConfigService.shared,
+                                          eventCenter: EventCenter.shared)
         let wireframe = SplashWireframe()
         let view = SplashViewController()
         view.presenter = presenter

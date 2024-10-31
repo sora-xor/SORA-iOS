@@ -28,60 +28,59 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import Foundation
 import RobinHood
-import sorawallet
+import CoreData
 
-protocol FiatServiceObserverProtocol: AnyObject {
-    func processFiat(data: [FiatData])
-}
-
-protocol FiatServiceProtocol: AnyObject {
-    func getFiat() async -> [FiatData]
-}
-
-struct FiatServiceObserver {
-    weak var observer: FiatServiceObserverProtocol?
-}
-
-actor FiatService {
-    static let shared = FiatService()
-    private let operationManager: OperationManager = OperationManager()
-    private var expiredDate: Date = Date()
-    private var fiatData: [FiatData] = []
-    
-    private func updateFiatDataAwait() async -> [FiatData] {
-        let queryOperation = SubqueryFiatInfoOperation<[FiatData]>(baseUrl: ConfigService.shared.config.subqueryURL)
-        operationManager.enqueue(operations: [queryOperation], in: .transient)
-
-        return await withCheckedContinuation { continuation in
-            queryOperation.completionBlock = {
-                guard let response = try? queryOperation.extractNoCancellableResultData() else {
-                    continuation.resume(returning: [])
-                    return
-                }
-                continuation.resume(returning: response)
-            }
-        }
+struct CachedConfig: Codable {
+    enum CodingKeys: String, CodingKey {
+        case configId
+        case explorerUrl
+        case typesUrl
+        case nodes
     }
+    let configId: String
+    let explorerUrl: String
+    let typesUrl: String
+    let nodes: [CachedNode]
     
-    private func updateFiatData(with data: [FiatData]) async {
-        fiatData = data
-        expiredDate = Date().addingTimeInterval(600)
+    init(configId: String, explorerUrl: String, typesUrl: String, nodes: [CachedNode]) {
+        self.configId = configId
+        self.explorerUrl = explorerUrl
+        self.typesUrl = typesUrl
+        self.nodes = nodes
     }
 }
 
-extension FiatService: FiatServiceProtocol {
-    
-    func getFiat() async -> [FiatData] {
+extension CachedConfig: Identifiable {
+    var identifier: String { configId }
+    var id: String { configId }
+}
+
+extension CDConfig: CoreDataCodable {
+    var entityIdentifierFieldName: String { #keyPath(CDConfig.configId) }
+
+    public func populate(from decoder: Decoder, using context: NSManagedObjectContext) throws {
+        let config = try CachedConfig(from: decoder)
+
+        configId = config.configId
+        explorerUrl = config.explorerUrl
+        typesUrl = config.typesUrl
         
-        if !fiatData.isEmpty {
-            return fiatData
-        }
-        
-        let response = await updateFiatDataAwait()
-        await updateFiatData(with: response)
-        
-        return response
+        nodes = NSSet(array: config.nodes.map { remoteNode in
+            let node = CDNode(context: context)
+            node.address = remoteNode.address
+            node.name = remoteNode.name
+            return node
+        })
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CachedConfig.CodingKeys.self)
+
+        try container.encode(configId, forKey: .configId)
+        try container.encode(explorerUrl, forKey: .explorerUrl)
+        try container.encode(typesUrl, forKey: .typesUrl)
+        try container.encode(nodes as? Set<CDNode>, forKey: .nodes)
+
     }
 }

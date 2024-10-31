@@ -62,13 +62,11 @@ struct AssetInfo: Codable {
         precision = try container.decode(StringCodable<UInt32>.self, forKey: .precision).wrappedValue
         icon = try container.decodeIfPresent(String.self, forKey: .icon)
         visible = try container.decodeIfPresent(Bool.self, forKey: .visible) ?? false
-        fiatPrice = try container.decodeIfPresent(Decimal.self, forKey: .visible)
     }
 
     init(
         id: String,
         symbol: String,
-        chainId: String,
         precision: UInt32,
         icon: String?,
         displayName: String?,
@@ -102,7 +100,6 @@ extension AssetInfo {
     static let xor = AssetInfo(
         id: WalletAssetId.xor.rawValue,
         symbol: "XOR",
-        chainId: "",
         precision: 18,
         icon: nil,
         displayName: nil,

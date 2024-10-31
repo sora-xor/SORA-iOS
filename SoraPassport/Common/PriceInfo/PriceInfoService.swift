@@ -61,7 +61,7 @@ actor PriceInfoService {
 extension PriceInfoService: PriceInfoServiceProtocol {
     
     func setup(for assetIds: [String]) async {
-        priceInfo = await self.downloadInfo(for: assetIds)
+        priceInfo = await downloadInfo(for: assetIds)
     }
     
     func getPriceInfo(for assetIds: [String]) async -> PriceInfo {

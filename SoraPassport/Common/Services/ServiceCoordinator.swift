@@ -57,6 +57,7 @@ final class ServiceCoordinator {
     }
 
     private func setup(chainRegistry: ChainRegistryProtocol) {
+        //WHY
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         chainRegistry.subscribeToChians()
         chainRegistry.syncUp()

@@ -41,13 +41,10 @@ protocol AssetManagerProtocol: AnyObject {
     func saveAssetList(_ list: [AssetInfo])
     func sortedAssets(_ list: [WalletAsset], onlyVisible: Bool) -> [WalletAsset]
     func visibleCount() -> UInt
-    static var networkAssets: [AssetInfo] { get set }
     func setup(for accountSettings: SelectedWalletSettings)
 }
 
 final class AssetManager: AssetManagerProtocol {
-    static var networkAssets: [AssetInfo] = [] //very dirty, bur we need to pass network assets into initialization of the chain.
-
     private let accountRepository: AnyDataProviderRepository<AccountItem>
     private let storage: AnyDataProviderRepository<AssetInfo>
     private let operationManager: OperationManagerProtocol
@@ -72,7 +69,6 @@ final class AssetManager: AssetManagerProtocol {
         self.operationManager = operationManager
         self.chainProvider = chainProvider
         self.chainId = chainId
-
         self.accountRepository = AnyDataProviderRepository(
             UserDataStorageFacade.shared
             .createRepository(filter: nil,

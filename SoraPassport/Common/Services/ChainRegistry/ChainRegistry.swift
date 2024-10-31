@@ -52,6 +52,7 @@ protocol ChainRegistryProtocol: AnyObject {
     func performHotBoot()
     func performColdBoot()
     func syncUp()
+    func syncUpServices()
 }
 
 final class ChainRegistry {
@@ -80,6 +81,7 @@ final class ChainRegistry {
     private let mutex = NSLock()
 
     private let maxAttemptCount = 2
+    private let rumtimeVersionService: RuntimeVersionService
 
     init(
         snapshotHotBootBuilder: SnapshotHotBootBuilderProtocol,
@@ -94,7 +96,8 @@ final class ChainRegistry {
         eventCenter: EventCenterProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
         operationManager: OperationManagerProtocol,
-        networkStatusPresenter: NetworkAvailabilityLayerInteractorOutputProtocol
+        networkStatusPresenter: NetworkAvailabilityLayerInteractorOutputProtocol,
+        rumtimeVersionService: RuntimeVersionService
     ) {
         self.snapshotHotBootBuilder = snapshotHotBootBuilder
         self.runtimeProviderPool = runtimeProviderPool
@@ -109,6 +112,7 @@ final class ChainRegistry {
         self.chainRepository = chainRepository
         self.operationManager = operationManager
         self.networkStatusPresenter = networkStatusPresenter
+        self.rumtimeVersionService = rumtimeVersionService
 
         connectionPool.setDelegate(self)
 
@@ -134,15 +138,25 @@ final class ChainRegistry {
 
                     runtimeSyncService.register(chain: newChain, with: connection)
 
-                    setupRuntimeVersionSubscription(for: newChain, connection: connection)
+                    Task { [weak self] in
+                        guard let version = try await self?.rumtimeVersionService.fetch(with: connection) else { return }
+                        self?.runtimeSyncService.apply(version: version, for: newChain.chainId)
+                    }
+
                     setupAssetManager(for: newChain)
                     chains.append(newChain)
+
                 case let .update(updatedChain):
                     clearRuntimeSubscription(for: updatedChain.chainId)
 
                     let connection = try connectionPool.setupConnection(for: updatedChain)
                     runtimeProviderPool.setupRuntimeProvider(for: updatedChain)
-                    setupRuntimeVersionSubscription(for: updatedChain, connection: connection)
+                    
+                    Task { [weak self] in
+                        guard let version = try await self?.rumtimeVersionService.fetch(with: connection) else { return }
+                        self?.runtimeSyncService.apply(version: version, for: updatedChain.chainId)
+                    }
+
                     setupAssetManager(for: updatedChain)
                     chains = chains.filter { $0.chainId != updatedChain.chainId }
                     chains.append(updatedChain)
@@ -221,11 +235,6 @@ final class ChainRegistry {
 
         runtimeVersionSubscriptions[chainId] = nil
     }
-
-    private func syncUpServices() {
-        chainSyncService.syncUp()
-        commonTypesSyncService.syncUp()
-    }
 }
 
 extension ChainRegistry: ChainRegistryProtocol {
@@ -245,9 +254,13 @@ extension ChainRegistry: ChainRegistryProtocol {
     }
 
     func performHotBoot() {
-//TODO: why not working?
-//        snapshotHotBootBuilder.startHotBoot()
-        performColdBoot()
+        subscribeToChains()
+        snapshotHotBootBuilder.startHotBoot()
+    }
+    
+    func syncUpServices() {
+        chainSyncService.syncUp()
+        commonTypesSyncService.syncUp()
     }
 
     private func subscribeToChains() {

@@ -302,7 +302,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             ChainNodeModel(url: URL(string: "wss://ws.mof.sora.org")!, name: "Sora", apikey: nil),
             ChainNodeModel(url: URL(string: "wss://ws.mof2.sora.org")!, name: "Sora", apikey: nil),
             ChainNodeModel(url: URL(string: "wss://ws.mof3.sora.org")!, name: "Sora", apikey: nil),
-            ChainNodeModel(url: URL(string: "wss://sora.api.onfinality.io/public-ws")!, name: "Sora onFinality", apikey: nil),
         ]
 
     #elseif F_STAGING || F_TEST
@@ -319,6 +318,94 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             ChainNodeModel(url: URL(string: "wss://ws.framenode-3.r0.dev.sora2.soramitsu.co.jp")!, name: "framenode-3.r0.dev", apikey: nil),
         ]
 
+    #endif
+    }
+    
+    var typesPath: String? {
+        R.file.testTypesJson.path()
+    }
+    
+    var commonTypesPath: String? {
+        R.file.testCommonTypesJson.path()
+    }
+    
+    var metadataPath: String? {
+        R.file.testMetadataTxt.path()
+    }
+    
+    var versionParh: String? {
+        R.file.testRuntimeVersionJson.path()
+    }
+    
+    func preparedWhiteListPath() -> String? {
+        R.file.whitelistJson.path()
+    }
+    
+    var remoteConfig: RemoteConfig {
+    #if F_RELEASE
+        return RemoteConfig(
+            subqueryUrlString: "https://api.subquery.network/sq/sora-xor/sora-prod",
+            typesUrlString: "https://config.polkaswap2.io/prod/substrate_types_mobile_ios.json",
+            defaultNodes: [
+                ChainNodeModel(
+                    url: URL(string: "wss://ws.mof.sora.org")!,
+                    name: "SORA Parliament Ministry of Finance",
+                    apikey: nil
+                ),
+                ChainNodeModel(
+                    url: URL(string: "wss://mof2.sora.org")!,
+                    name: "SORA Parliament Ministry of Finance",
+                    apikey: nil
+                ),
+                ChainNodeModel(
+                    url: URL(string: "wss://mof3.sora.org")!,
+                    name: "SORA Parliament Ministry of Finance",
+                    apikey: nil
+                ),
+            ],
+            isSoraCardEnabled: false
+        )
+    #elseif F_STAGING || F_TEST
+        return RemoteConfig(
+            subqueryUrlString: "https://api.subquery.network/sq/sora-xor/sora-staging",
+            typesUrlString: "https://config.polkaswap2.io/stage/substrate_types_mobile_ios.json",
+            defaultNodes: [
+                ChainNodeModel(
+                    url: URL(string: "wss://ws.framenode-7.s4.stg1.sora2.soramitsu.co.jp")!,
+                    name: "framenode-7.s4.stg1",
+                    apikey: nil
+                ),
+                ChainNodeModel(
+                    url: URL(string: "wss://ws.framenode-8.s5.stg1.sora2.soramitsu.co.jp")!,
+                    name: "framenode-8.s5.stg1",
+                    apikey: nil
+                ),
+            ],
+            isSoraCardEnabled: false
+        )
+    #else
+        return RemoteConfig(
+            subqueryUrlString: "https://api.subquery.network/sq/sora-xor/sora-dev",
+            typesUrlString: "https://config.polkaswap2.io/dev/substrate_types_mobile_ios.json",
+            defaultNodes: [
+                ChainNodeModel(
+                    url: URL(string: "wss://ws.framenode-1.r0.dev.sora2.soramitsu.co.jp")!,
+                    name: "framenode-1.r0.dev",
+                    apikey: nil
+                ),
+                ChainNodeModel(
+                    url: URL(string: "wss://ws.framenode-2.r0.dev.sora2.soramitsu.co.jp")!,
+                    name: "framenode-2.r0.dev",
+                    apikey: nil
+                ),
+                ChainNodeModel(
+                    url: URL(string: "wss://ws.framenode-3.r0.dev.sora2.soramitsu.co.jp")!,
+                    name: "framenode-3.r0.dev",
+                    apikey: nil
+                ),
+            ],
+            isSoraCardEnabled: false
+        )
     #endif
     }
 

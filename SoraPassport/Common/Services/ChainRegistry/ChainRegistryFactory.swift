@@ -82,6 +82,7 @@ final class ChainRegistryFactory {
             filesOperationFactory: filesOperationFactory,
             dataOperationFactory: dataFetchOperationFactory,
             eventCenter: EventCenter.shared,
+            fileRepository: FileRepository(),
             logger: Logger.shared
         )
 
@@ -101,7 +102,7 @@ final class ChainRegistryFactory {
         let chainRepositoryFactory = ChainRepositoryFactory(storageFacade: repositoryFacade)
         let chainRepository = chainRepositoryFactory.createRepository()
         let chainProvider = createChainProvider(from: repositoryFacade, chainRepository: chainRepository)
-
+        let assetsRepository: CoreDataRepository<AssetInfo, CDAssetInfo> = SubstrateDataStorageFacade.shared.createRepository()
         let chainSyncService = ChainSyncService(
             typesUrl: ApplicationConfig.shared.commonTypesURL,
             assetsUrl: ApplicationConfig.shared.assetListURL,
@@ -109,6 +110,7 @@ final class ChainRegistryFactory {
             repository: AnyDataProviderRepository(chainRepository),
             eventCenter: EventCenter.shared,
             operationQueue: OperationManagerFacade.runtimeBuildingQueue,
+            assetsRepository: assetsRepository,
             logger: Logger.shared
         )
 
@@ -122,7 +124,8 @@ final class ChainRegistryFactory {
             filesOperationFactory: filesOperationFactory,
             dataOperationFactory: dataFetchOperationFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.runtimeBuildingQueue
+            operationQueue: OperationManagerFacade.runtimeBuildingQueue,
+            fileRepository: FileRepository()
         )
 
         let snapshotHotBootBuilder = SnapshotHotBootBuilder(
@@ -152,7 +155,8 @@ final class ChainRegistryFactory {
             eventCenter: EventCenter.shared,
             chainRepository: AnyDataProviderRepository(ChainRepositoryFactory().createRepository()),
             operationManager: OperationManager(operationQueue: OperationManagerFacade.runtimeBuildingQueue),
-            networkStatusPresenter: networkStatusPresenter
+            networkStatusPresenter: networkStatusPresenter,
+            rumtimeVersionService: RuntimeVersionServiceDefault()
         )
     }
 

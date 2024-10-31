@@ -346,12 +346,12 @@ extension SupplyLiquidityViewModel: LiquidityViewModelProtocol {
         guard let assetManager = assetManager,
               let fiatService = fiatService,
               let xorAsset = assetManager.assetInfo(for: WalletAssetId.xor.rawValue),
-              let xstUsdAsset = assetManager.assetInfo(for: WalletAssetId.xstusd.rawValue)
+              let xstUsdAsset = assetManager.assetInfo(for: WalletAssetId.xstusd)
         else { return }
 
         var acceptableAssets = [xorAsset]
         
-        if secondAssetId != WalletAssetId.xst.rawValue {
+        if secondAssetId != WalletAssetId.xst {
             acceptableAssets.append(xstUsdAsset)
         }
         
@@ -376,13 +376,12 @@ extension SupplyLiquidityViewModel: LiquidityViewModelProtocol {
         guard
             let assetManager = assetManager,
             let fiatService = fiatService,
-            let ethAsset = assetManager.assetInfo(for: WalletAssetId.eth),
             var assets = assetManager.getAssetList()?.filter({ asset in
                 let assetId = asset.identifier
                 
                 let assetFilter = assetId != firstAssetId
                 
-                let unAcceptableAssetIds = [WalletAssetId.xor.rawValue, WalletAssetId.xstusd.rawValue]
+                let unAcceptableAssetIds = [WalletAssetId.xor.rawValue, WalletAssetId.xstusd]
                 
                 return assetFilter && !unAcceptableAssetIds.contains(assetId)
             }) else { return }
@@ -418,7 +417,6 @@ extension SupplyLiquidityViewModel: LiquidityViewModelProtocol {
         
         Task {
             let dexId = (try? await dexService.getDexInfo(for: firstAssetId)) ?? 0
-            print("OLOLO \(try? await dexService.getDexInfo(for: firstAssetId))")
             DispatchQueue.main.async {
                 self.wireframe?.showSupplyLiquidityConfirmation(
                     on: self.view?.controller.navigationController,

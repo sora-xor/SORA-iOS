@@ -87,7 +87,7 @@ extension ExplorePoolsService: ExplorePoolsServiceInputProtocol {
                     return
                 }
                 
-                let baseAssetIds = [WalletAssetId.xor.rawValue, WalletAssetId.xstusd.rawValue]
+                let baseAssetIds = [WalletAssetId.xor.rawValue, WalletAssetId.xstusd]
                 let targetAssetIds: [String] = self.assetInfos.filter { !baseAssetIds.contains($0.assetId) }.map { $0.assetId }
 
                 async let explorePools = self.collectPools(baseAssetIds: baseAssetIds, targetAssetIds: targetAssetIds).concurrentMap({ poolTuple in

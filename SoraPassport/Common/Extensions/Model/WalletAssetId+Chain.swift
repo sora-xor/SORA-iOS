@@ -42,12 +42,12 @@ extension WalletAssetId {
             return 1
         case .pswap:
             return 2
-        case .xst:
+        case .eth:
             return 3
-        case .xstusd:
+        case .dai:
             return 4
-        case .tbcd:
-            return 5
+        default:
+            return nil
         }
     }
 

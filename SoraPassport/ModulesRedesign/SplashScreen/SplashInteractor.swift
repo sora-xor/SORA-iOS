@@ -31,6 +31,7 @@
 import Foundation
 import SoraKeystore
 import SSFUtils
+import RobinHood
 
 typealias RuntimeServiceProtocol = RuntimeRegistryServiceProtocol & RuntimeCodingServiceProtocol
 
@@ -40,13 +41,22 @@ final class SplashInteractor: SplashInteractorProtocol {
     let socketService: WebSocketServiceProtocol
     let configService: ConfigServiceProtocol
     let reachabilityManager: ReachabilityManagerProtocol? = ReachabilityManager.shared
+    let eventCenter: EventCenterProtocol
+    private var assetProvider: AssetsInfoProvider?
+    private let whitelistService: WhitelistService
 
     init(settings: SettingsManagerProtocol,
          socketService: WebSocketServiceProtocol,
-         configService: ConfigServiceProtocol) {
+         configService: ConfigServiceProtocol,
+         eventCenter: EventCenterProtocol,
+         whitelistService: WhitelistService = WhitelistServiceDefault()
+    ) {
         self.settings = settings
         self.socketService = socketService
         self.configService = configService
+        self.eventCenter = eventCenter
+        self.whitelistService = whitelistService
+        self.eventCenter.add(observer: self)
     }
 
     func setup() {
@@ -57,11 +67,6 @@ final class SplashInteractor: SplashInteractorProtocol {
     }
 
     private func loadGenesis() {
-        guard reachabilityManager?.isReachable ?? false else {
-            loadAssetsInfo(chainId: nil)
-            return
-        }
-
         let provider = GenesisProvider(engine: socketService.connection!)
         provider.load(completion: { [weak self] genesis in
             self?.didLoadGenesis(genesis)
@@ -73,32 +78,29 @@ final class SplashInteractor: SplashInteractorProtocol {
             self.settings.set(value: genesis, for: SettingsKey.externalGenesis.rawValue)
             Logger.shared.info("Runtime update gen: " + genesis)
         }
-        loadAssetsInfo(chainId: genesis)
-    }
 
-    private func loadAssetsInfo(chainId: String?) {
-        guard reachabilityManager?.isReachable ?? false else {
-            didLoadAssetsInfo([])
-            return
+        DispatchQueue.main.async {
+            self.startChain()
         }
         
-        let provider = AssetsInfoProvider(engine: socketService.connection!, storageKeyFactory: StorageKeyFactory(), chainId: chainId)
-        provider.load { [weak self] assetsInfo in
-            self?.didLoadAssetsInfo(assetsInfo)
+        if let genesis {
+            loadAssetsInfo(chainId: genesis)
         }
     }
 
-    private func didLoadAssetsInfo(_ assetsInfo: [AssetInfo]) {
-        Task {
-            AssetManager.networkAssets = assetsInfo
-
-            let assetsIds = assetsInfo.filter{ $0.visible }.map { $0.assetId }
-            await PriceInfoService.shared.setup(for: assetsIds)
-
-            socketService.throttle()
-
-            DispatchQueue.main.async {
-                self.startChain()
+    private func loadAssetsInfo(chainId: String) {
+        let storage: CoreDataRepository<AssetInfo, CDAssetInfo> = SubstrateDataStorageFacade.shared.createRepository()
+        assetProvider = AssetsInfoProvider(
+            engine: socketService.connection!,
+            storageKeyFactory: StorageKeyFactory(),
+            storage: storage,
+            chainId: chainId,
+            whitelistService: whitelistService
+        )
+        assetProvider?.load { [weak self] assetInfos in
+            Task {
+                let assetsIds = assetInfos.filter { $0.visible }.map { $0.assetId }
+                await PriceInfoService.shared.setup(for: assetsIds)
             }
         }
     }
@@ -130,14 +132,24 @@ final class SplashInteractor: SplashInteractorProtocol {
                     chainRegistry.performHotBoot()
                     logger.debug("Selected account: \(metaAccount.address)")
                 } else {
-                    chainRegistry.performColdBoot()
+
+                    if chainRegistry.getRuntimeProvider(for: Chain.sora.genesisHash()) != nil {
+                        self.presenter.setupComplete()
+                    } else {
+                        chainRegistry.performColdBoot()
+                    }
+
                     logger.debug("No selected account")
                 }
             case let .failure(error):
                 logger.error("Selected account setup failed: \(error)")
             }
         }
+    }
+}
 
+extension SplashInteractor: EventVisitorProtocol {
+    func processRuntimeCoderReady(event: RuntimeCoderCreated) {
         self.presenter.setupComplete()
     }
 }

@@ -56,7 +56,7 @@ extension WalletNetworkFacade {
     }
 
     fileprivate func loadAccountPools() async -> [String: [String]] {
-        let baseAssetIds = [WalletAssetId.xor.rawValue, WalletAssetId.xstusd.rawValue]
+        let baseAssetIds = [WalletAssetId.xor.rawValue, WalletAssetId.xstusd]
         
         async let pools = baseAssetIds.concurrentMap { baseAssetId in
             return await self.poolList(baseAssetId: baseAssetId)

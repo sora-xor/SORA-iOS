@@ -31,6 +31,7 @@
 import SSFUtils
 import Foundation
 import SSFStorageQueryKit
+import RobinHood
 
 struct AssetInfoDto: ScaleCodable {
     let symbol: String
@@ -54,7 +55,7 @@ struct AssetInfoDto: ScaleCodable {
 }
 
 protocol AssetsInfoProviderProtocol {
-    func load(completion: ([AssetInfo]) -> Void)
+    func load(completion: (([AssetInfo]) -> Void)?)
 }
 
 final class AssetsInfoProvider: AssetsInfoProviderProtocol {
@@ -62,9 +63,9 @@ final class AssetsInfoProvider: AssetsInfoProviderProtocol {
     let storageKeyFactory: StorageKeyFactoryProtocol
     let operationQueue = OperationQueue()
     let assetInfoKey: String
-    let chainId: String?
+    let chainId: String
 
-    let keysPageSize: UInt32 = 100
+    let keysPageSize: UInt32 = 1000
 
     var keysOnCurrentPageCount = 0
     var currentLastKey: String? = nil
@@ -72,27 +73,76 @@ final class AssetsInfoProvider: AssetsInfoProviderProtocol {
 
     var keys: [String] = []
     var assetsInfo: [AssetInfo] = []
-
-    init(engine: JSONRPCEngine, storageKeyFactory: StorageKeyFactoryProtocol, chainId: String? = nil) {
+    private let storage: CoreDataRepository<AssetInfo, CDAssetInfo>
+    private let whitelistService: WhitelistService
+    init(
+        engine: JSONRPCEngine,
+        storageKeyFactory: StorageKeyFactoryProtocol,
+        storage: CoreDataRepository<AssetInfo, CDAssetInfo>,
+        chainId: String = "",
+        whitelistService: WhitelistService
+    ) {
         self.engine = engine
         self.storageKeyFactory = storageKeyFactory
         assetInfoKey = try! storageKeyFactory.assetsInfoKeysPaged().toHex(includePrefix: true)
         self.chainId = chainId
+        self.storage = storage
+        self.whitelistService = whitelistService
     }
-
-    func load(completion: ([AssetInfo]) -> Void) {
+    
+    func load(completion: (([AssetInfo]) -> Void)?) {
         loadAssetsInfoKeys() { [weak self] in
             self?.loadInfo(completion: completion)
         }
     }
     
-    private func loadInfo(completion: ([AssetInfo]) -> Void) {
+    private func loadInfo(completion: (([AssetInfo]) -> Void)?) {
         loadAssetsInfo()
         if !assetsInfo.isEmpty {
-            completion(assetsInfo)
+            Task {
+                let assets = (try? await filterByWhitelist(assetsInfo)) ?? []
+                save(assets: assets, completion: completion)
+            }
             return
         }
         loadInfo(completion: completion)
+    }
+    
+    private func filterByWhitelist(_ assets: [AssetInfo]) async throws -> [AssetInfo] {
+        let whitelistAssets = try await whitelistService.fetch()
+        
+        return assets.compactMap { asset in
+            guard let listed = whitelistAssets.first(where: { asset.assetId == $0.assetId }) else {
+                return nil
+            }
+            
+            return AssetInfo(
+                id: asset.id,
+                symbol: listed.symbol,
+                precision: asset.precision,
+                icon: listed.icon,
+                displayName: listed.name,
+                visible: asset.visible
+            )
+        }
+    }
+    
+    func save(assets: [AssetInfo], completion: (([AssetInfo]) -> Void)?) {
+        let localAssetsOperation = storage.fetchAllOperation(with: RepositoryFetchOptions())
+        
+        let saveOperation = storage.saveOperation {
+            return assets
+        } _: {
+            return []
+        }
+        
+        saveOperation.addDependency(localAssetsOperation)
+        saveOperation.completionBlock = {
+            ChainRegistryFacade.sharedRegistry.syncUpServices()
+            completion?(assets)
+        }
+    
+        operationQueue.addOperations([localAssetsOperation, saveOperation], waitUntilFinished: false)
     }
 
     //MARK: - Load Keys
@@ -176,7 +226,6 @@ final class AssetsInfoProvider: AssetsInfoProviderProtocol {
         return AssetInfo(
             id: assetId,
             symbol: assetInfoDto.symbol,
-            chainId: chainId ?? "",
             precision: UInt32(assetInfoDto.precision),
             icon: nil,
             displayName: assetInfoDto.name,
@@ -184,9 +233,8 @@ final class AssetsInfoProvider: AssetsInfoProviderProtocol {
                 WalletAssetId.xor.rawValue,
                 WalletAssetId.val.rawValue,
                 WalletAssetId.pswap.rawValue,
-                WalletAssetId.xst.rawValue,
-                WalletAssetId.xstusd.rawValue,
-                WalletAssetId.tbcd.rawValue
+                WalletAssetId.eth.rawValue,
+                WalletAssetId.dai.rawValue
             ].contains(assetId)
         )
     }

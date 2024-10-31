@@ -30,7 +30,10 @@
 
 import Foundation
 import RobinHood
-import sorawallet
+
+enum ConfigServiceError: Error {
+    case invalidResponse
+}
 
 protocol ConfigServiceProtocol: AnyObject {
     var config: RemoteConfig { get }
@@ -57,30 +60,123 @@ struct RemoteConfig {
 final class ConfigService {
     static let shared = ConfigService()
     private let operationManager: OperationManager = OperationManager()
+    private let storage: CoreDataRepository<CachedConfig, CDConfig>
     var config: RemoteConfig = RemoteConfig()
+    private let reachabilityManager: ReachabilityManagerProtocol? = ReachabilityManager.shared
+    
+    init() {
+        let mapper: CodableCoreDataMapper<CachedConfig, CDConfig> = CodableCoreDataMapper(
+            entityIdentifierFieldName: #keyPath(CDConfig.configId)
+        )
+        storage = SubstrateDataStorageFacade.shared.createRepository(mapper: AnyCoreDataMapper(mapper))
+    }
 }
 
 extension ConfigService: ConfigServiceProtocol {
     
     func setupConfig(completion: @escaping () -> Void) {
-        let queryOperation = SubqueryConfigInfoOperation<SoraConfig>()
-        
-        queryOperation.completionBlock = { [weak self] in
-            guard let self = self, let response = try? queryOperation.extractNoCancellableResultData() else {
-                completion()
-                return
-            }
-            let nodes: Set<ChainNodeModel> = Set(response.nodes.compactMap({ node in
-                guard let url = URL(string: node.address) else { return nil }
-                return ChainNodeModel(url: url, name: node.name, apikey: nil)
-            }))
-            self.config = RemoteConfig(subqueryUrlString: response.blockExplorerUrl,
-                                       typesUrlString: response.substrateTypesUrl,
-                                       defaultNodes: nodes,
-                                       isSoraCardEnabled: response.soracard)
+        guard reachabilityManager?.isReachable ?? false else {
+            self.config = ApplicationConfig.shared.remoteConfig
             completion()
+            return
         }
         
-        operationManager.enqueue(operations: [queryOperation], in: .blockAfter)
+        let commonUrl = URL(string: ApplicationConfig.shared.commonConfigUrl)!
+        let commonOperation = GitHubConfigOperationFactory<CommonCofig>().fetchData(commonUrl)
+        
+        let mobileUrl = URL(string: ApplicationConfig.shared.mobileConfigUrl)!
+        let mobileOperation = GitHubConfigOperationFactory<MobileCofig>().fetchData(mobileUrl)
+        
+        let mapOperation = ClosureOperation<Void> {
+            do {
+                guard let commonResponse = try commonOperation.extractNoCancellableResultData(),
+                      let mobileResponse = try mobileOperation.extractNoCancellableResultData() else {
+                    throw ConfigServiceError.invalidResponse
+                }
+                
+                let nodes: Set<ChainNodeModel> = Set(commonResponse.DEFAULT_NETWORKS.compactMap({ node in
+                    guard let url = URL(string: node.address) else { return nil }
+                    return ChainNodeModel(url: url, name: node.name, apikey: nil)
+                }))
+                
+                self.config = RemoteConfig(
+                    subqueryUrlString: commonResponse.SUBQUERY_ENDPOINT,
+                    typesUrlString: mobileResponse.substrate_types_ios,
+                    defaultNodes: nodes,
+                    isSoraCardEnabled: mobileResponse.soracard
+                )
+                completion()
+
+                Task { [weak self] in
+                    try? await self?.saveConfig(commonResponse: commonResponse, mobileResponse: mobileResponse)
+                }
+            } catch {
+                Task { [weak self] in
+                    guard let self else { return }
+                    do {
+                        let cachedConfig = try await self.getConfig()
+                        
+                        let nodes: Set<ChainNodeModel> = Set(cachedConfig.nodes.compactMap({ node in
+                            guard let url = URL(string: node.address) else { return nil }
+                            return ChainNodeModel(url: url, name: node.name, apikey: nil)
+                        }))
+                        
+                        self.config = RemoteConfig(
+                            subqueryUrlString: cachedConfig.explorerUrl,
+                            typesUrlString: cachedConfig.typesUrl,
+                            defaultNodes: nodes,
+                            isSoraCardEnabled: false
+                        )
+
+                        completion()
+                    } catch {
+                        self.config = ApplicationConfig.shared.remoteConfig
+                        completion()
+                    }
+                }
+            }
+        }
+        
+        mapOperation.addDependency(commonOperation)
+        mapOperation.addDependency(mobileOperation)
+        
+        operationManager.enqueue(operations: [commonOperation, mobileOperation, mapOperation], in: .blockAfter)
+    }
+    
+    private func saveConfig(commonResponse: CommonCofig, mobileResponse: MobileCofig) async throws {
+        let nodes: [CachedNode] = commonResponse.DEFAULT_NETWORKS.compactMap {
+            CachedNode(name: $0.name, address: $0.address)
+        }
+        
+        let saveOperation = storage.saveOperation({[
+            CachedConfig(
+                configId: "localConfig",
+                explorerUrl: commonResponse.SUBQUERY_ENDPOINT,
+                typesUrl: mobileResponse.substrate_types_ios,
+                nodes: nodes
+            )
+        ]}, {[]})
+        operationManager.enqueue(operations: [saveOperation], in: .transient)
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            saveOperation.completionBlock = {
+                continuation.resume()
+            }
+        }
+    }
+    
+    private func getConfig() async throws -> CachedConfig {
+        let fetchOperation = storage.fetchOperation(by: { "localConfig" }, options: RepositoryFetchOptions())
+        operationManager.enqueue(operations: [fetchOperation], in: .transient)
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            fetchOperation.completionBlock = {
+                    guard let config = try? fetchOperation.extractNoCancellableResultData() else {
+                        continuation.resume(throwing: ConfigServiceError.invalidResponse)
+                        return
+                    }
+                    continuation.resume(returning: config)
+            }
+        }
     }
 }

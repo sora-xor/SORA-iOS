@@ -58,6 +58,8 @@ final class GenesisProvider: GenesisProviderProtocol {
     private func createGenesisOperation() -> BaseOperation<String> {
 #if F_RELEASE
         return JSONRPCListOperation<String>.createWithResult(Chain.sora.genesisHash())
+#elseif F_STAGING || F_TEST
+        return JSONRPCListOperation<String>.createWithResult("0x83cee0da380128ed5285743d5e49b5890724afe42542e378ae153ca59510a2c8")
 #else
         var currentBlock = 0
         let param = Data(Data(bytes: &currentBlock, count: MemoryLayout<UInt32>.size).reversed())

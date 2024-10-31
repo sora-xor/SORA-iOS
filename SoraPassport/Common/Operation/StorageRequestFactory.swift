@@ -309,21 +309,14 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         decodingOperation.configurationBlock = {
             do {
                 let result = try queryOperation.extractNoCancellableResultData().flatMap { $0 }
-                print("OLOLO1 result \(result)")
                 decodingOperation.codingFactory = try factory()
 
                 decodingOperation.dataList = result
                     .flatMap { StorageUpdateData(update: $0).changes }
                     .map(\.value)
             } catch {
-                print("OLOLO1 decodingOperation result \(error)")
                 decodingOperation.result = .failure(error)
             }
-        }
-        
-        decodingOperation.completionBlock = {
-            let result = try? decodingOperation.extractResultData()
-            print("OLOLO1 decodingOperation result \(result)")
         }
 
         decodingOperation.addDependency(queryOperation)
@@ -370,7 +363,6 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
                         throw BaseOperationError.unexpectedDependentResult
                     }
 
-                    print("OLOLO2 key \(key)")
                     let request = PagedKeysRequest(key: key)
 
                     let queryOperation = JSONRPCOperation<PagedKeysRequest, [String]>(

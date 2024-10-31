@@ -80,12 +80,14 @@ final class RuntimeSyncService {
     private(set) var retryAttempts: [ChainModel.Id: RetryAttempt] = [:]
     private var mutex = NSLock()
     private var retryScheduler: Scheduler?
+    private let fileRepository: FileRepositoryProtocol
 
     init(
         repository: AnyDataProviderRepository<RuntimeMetadataItem>,
         filesOperationFactory: RuntimeFilesOperationFactoryProtocol,
         dataOperationFactory: DataOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
+        fileRepository: FileRepositoryProtocol,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         maxConcurrentSyncRequests: Int = 8,
         dataHasher: StorageHasher = .twox256,
@@ -98,6 +100,7 @@ final class RuntimeSyncService {
         self.eventCenter = eventCenter
         self.dataHasher = dataHasher
         self.logger = logger
+        self.fileRepository = fileRepository
 
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = maxConcurrentSyncRequests
@@ -115,11 +118,16 @@ final class RuntimeSyncService {
         }
 
         let chainTypesSyncWrapper = shouldSyncTypes ? syncInfo.typesURL.map {
-            createChainTypesSyncOperation(chainId, hasher: dataHasher, url: $0)
+            return createChainTypesSyncOperation(
+                chainId: chainId,
+                runtimeVersion: newVersion?.specVersion ?? 102,
+                hasher: dataHasher,
+                url: $0
+            )
         } : nil
 
         let metadataSyncWrapper = newVersion.map {
-            createMetadataSyncOperation(
+            return createMetadataSyncOperation(
                 for: chainId,
                 runtimeVersion: $0,
                 connection: syncInfo.connection
@@ -132,7 +140,7 @@ final class RuntimeSyncService {
 
         let dependencies = (chainTypesSyncWrapper?.allOperations ?? []) +
             (metadataSyncWrapper?.allOperations ?? [])
-
+        
         let processingOperation = ClosureOperation<SyncResult> {
             SyncResult(
                 chainId: chainId,
@@ -257,13 +265,35 @@ final class RuntimeSyncService {
         }
     }
 
+    
     private func createChainTypesSyncOperation(
-        _ chainId: ChainModel.Id,
+        chainId: ChainModel.Id,
+        runtimeVersion: UInt32,
         hasher: StorageHasher,
         url: URL
     ) -> CompoundOperationWrapper<String> {
+        let filePath = ApplicationConfig.shared.typesPath ?? ""
+        let localFileOperation = fileRepository.readOperation(at: filePath)
+        
+        let fileFetchOperation = filesOperationFactory.fetchChainTypesOperation(for: chainId)
+        
         let remoteFileOperation = dataOperationFactory.fetchData(from: url)
-
+        remoteFileOperation.configurationBlock = {
+            do {
+                guard let currentItem = try fileFetchOperation.targetOperation.extractNoCancellableResultData() else {
+                    let data = (try localFileOperation.extractNoCancellableResultData()) ?? Data()
+                    remoteFileOperation.result = .success(data)
+                    return
+                }
+                
+                if UserDefaults.standard.integer(forKey: "runtimeVersion") == runtimeVersion {
+                    remoteFileOperation.result = .success(currentItem)
+                }
+            } catch {}
+        }
+        remoteFileOperation.addDependency(localFileOperation)
+        remoteFileOperation.addDependency(fileFetchOperation.targetOperation)
+        
         let fileSaveWrapper = filesOperationFactory.saveChainTypesOperation(for: chainId) {
             try remoteFileOperation.extractNoCancellableResultData()
         }
@@ -272,6 +302,7 @@ final class RuntimeSyncService {
 
         let mapOperation = ClosureOperation<String> {
             _ = try fileSaveWrapper.targetOperation.extractNoCancellableResultData()
+            UserDefaults.standard.set(runtimeVersion, forKey: "runtimeVersion")
             let data = try remoteFileOperation.extractNoCancellableResultData()
 
             return try hasher.hash(data: data).toHex()
@@ -282,7 +313,7 @@ final class RuntimeSyncService {
 
         return CompoundOperationWrapper(
             targetOperation: mapOperation,
-            dependencies: [remoteFileOperation] + fileSaveWrapper.allOperations
+            dependencies: [remoteFileOperation, localFileOperation] + fileSaveWrapper.allOperations + fileFetchOperation.allOperations
         )
     }
 
@@ -291,6 +322,9 @@ final class RuntimeSyncService {
         runtimeVersion: RuntimeVersion,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<Void> {
+        let filePath = ApplicationConfig.shared.metadataPath ?? ""
+        let localFileOperation = fileRepository.readOperation(at: filePath)
+        
         let localMetadataOperation = repository.fetchOperation(
             by: chainId,
             options: RepositoryFetchOptions()
@@ -298,14 +332,20 @@ final class RuntimeSyncService {
 
         let remoteMetadaOperation = JSONRPCOperation<[String], String>(
             engine: connection,
-            method: RPCMethod.getRuntimeMetadata
+            method: RPCMethod.getRuntimeMetadata,
+            timeout: 60
         )
 
         remoteMetadaOperation.configurationBlock = {
             do {
-                let currentItem = try localMetadataOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                if let item = currentItem, item.version == runtimeVersion.specVersion {
+                guard let currentItem = try localMetadataOperation.extractNoCancellableResultData() else {
+                    let data = (try localFileOperation.extractNoCancellableResultData()) ?? Data()
+                    let hexData = String(data: data, encoding: .utf8) ?? ""
+                    remoteMetadaOperation.result = .success(hexData)
+                    return
+                }
+                
+                if currentItem.version == runtimeVersion.specVersion {
                     remoteMetadaOperation.result = .failure(RuntimeSyncServiceError.skipMetadataUnchanged)
                 }
             } catch {
@@ -314,6 +354,7 @@ final class RuntimeSyncService {
         }
 
         remoteMetadaOperation.addDependency(localMetadataOperation)
+        remoteMetadaOperation.addDependency(localFileOperation)
 
         let saveMetadataOperation = repository.saveOperation({
             let hexMetadata = try remoteMetadaOperation.extractNoCancellableResultData()
@@ -343,7 +384,7 @@ final class RuntimeSyncService {
 
         return CompoundOperationWrapper(
             targetOperation: filterOperation,
-            dependencies: [localMetadataOperation, remoteMetadaOperation, saveMetadataOperation]
+            dependencies: [localMetadataOperation, remoteMetadaOperation, saveMetadataOperation, localFileOperation]
         )
     }
 

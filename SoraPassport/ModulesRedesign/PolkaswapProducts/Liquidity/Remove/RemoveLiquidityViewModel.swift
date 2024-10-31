@@ -328,7 +328,7 @@ extension RemoveLiquidityViewModel: LiquidityViewModelProtocol {
         guard let assetManager = assetManager,
               let fiatService = fiatService,
               let xorAsset = assetManager.assetInfo(for: WalletAssetId.xor.rawValue),
-              let xstUsdAsset = assetManager.assetInfo(for: WalletAssetId.xstusd.rawValue) else { return }
+              let xstUsdAsset = assetManager.assetInfo(for: WalletAssetId.xstusd) else { return }
 
         let assets = [xorAsset, xstUsdAsset].filter({ $0.identifier != secondAssetId })
         

@@ -1,0 +1,21 @@
+{
+  "runtime_id": 35,
+  "types": { },
+  "versioning": [
+    {
+      "runtime_range": [
+        0,
+        null
+      ],
+      "types": {
+        "Balance": "u128",
+        "Index": "u32",
+        "Phase": "135",
+        "Address": "0",
+        "ExtrinsicSignature":  "sp_runtime::MultiSignature",
+        "19": "GenericEvent",
+        "257": "GenericCall"
+      }
+    }
+  ]
+}

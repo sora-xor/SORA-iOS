@@ -39,36 +39,29 @@ final class ChainModelMapper {
     typealias CoreDataEntity = CDChain
 
     // TODO: replace precondition failure to optional
-    private func createAsset(from entity: CDAssetInfo, chainId: String) -> AssetModel {
+    private func createAsset(from entity: CDAssetInfo, chainId: String) -> AssetModel? {
         guard
             let id = entity.assetId,
-//            let chainId = entity.identifier,
             let symbol = entity.symbol
         else {
-            preconditionFailure()
+            return nil
         }
 
         return AssetModel(
             id: id,
             symbol: symbol,
-            chainId: chainId,
             precision: UInt32(entity.precision ?? "", radix: 10) ?? 8,
             icon: entity.icon,
-//            priceId: entity.priceId,
-//            price: entity.price as Decimal?,
-//            transfersEnabled: entity.transfersEnabled,
-//            type: createChainAssetModelType(from: entity.type),
-//            currencyId: entity.currencyId,
             displayName: entity.name,
             visible: entity.visible
-//            existentialDeposit: entity.existentialDeposit
         )
     }
 
-    private func createChainAsset(from entity: CDChainAsset, parentChain: ChainModel) -> ChainAssetModel {
+    private func createChainAsset(from entity: CDChainAsset, parentChain: ChainModel) -> ChainAssetModel? {
         guard let assetId = entity.assetId,
-              let asset = entity.asset else {
-            preconditionFailure()
+              let asset = entity.asset,
+              let chainAsset = createAsset(from: asset, chainId: parentChain.chainId) else {
+            return nil
         }
         let staking: StakingType?
         if let entityStaking = entity.staking {
@@ -84,7 +77,7 @@ final class ChainModelMapper {
             staking: staking,
             purchaseProviders: purchaseProviders,
             type: createChainAssetModelType(from: entity.type),
-            asset: createAsset(from: asset, chainId: parentChain.chainId),
+            asset: chainAsset,
             chain: parentChain
         )
     }

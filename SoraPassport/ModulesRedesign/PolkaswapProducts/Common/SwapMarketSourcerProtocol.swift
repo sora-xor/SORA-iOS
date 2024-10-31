@@ -92,7 +92,7 @@ class SwapMarketSourcer: SwapMarketSourcerProtocol {
     }
 
     func isXSTUSD(_ assetId: String) -> Bool {
-        return assetId == WalletAssetId.xstusd.rawValue
+        return assetId == WalletAssetId.xstusd
     }
 
     func add(_ marketSource: LiquiditySourceType) {

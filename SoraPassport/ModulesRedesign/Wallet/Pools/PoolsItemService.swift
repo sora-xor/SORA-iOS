@@ -62,10 +62,10 @@ final class PoolsItemService {
     
     func setup(with pools: [PoolInfo]) {
         if fiatData.isEmpty {
-            poolViewModels = pools.filter { $0.isFavorite }.compactMap { item in
+            let localPools = pools.filter { $0.isFavorite }.compactMap { item in
                 return poolViewModelsFactory.createPoolViewModel(with: item, fiatData: [], mode: .view)
             }
-
+            poolViewModels = localPools
             updateHandler?()
         }
         
@@ -90,9 +90,10 @@ final class PoolsItemService {
             
             moneyText = "$" + (NumberFormatter.fiat.stringFromDecimal(fiatDecimal) ?? "")
             
-            poolViewModels = pools.filter { $0.isFavorite }.compactMap { item in
+            let localPools = pools.filter { $0.isFavorite }.compactMap { item in
                 return self.poolViewModelsFactory.createPoolViewModel(with: item, fiatData: fiatData, mode: .view)
             }
+            poolViewModels = localPools
             updateHandler?()
         }
     }

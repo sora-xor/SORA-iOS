@@ -30,58 +30,28 @@
 
 import Foundation
 import RobinHood
-import sorawallet
 
-protocol FiatServiceObserverProtocol: AnyObject {
-    func processFiat(data: [FiatData])
+protocol WhitelistService {
+    func fetch() async throws -> [Whitelist]
 }
 
-protocol FiatServiceProtocol: AnyObject {
-    func getFiat() async -> [FiatData]
-}
-
-struct FiatServiceObserver {
-    weak var observer: FiatServiceObserverProtocol?
-}
-
-actor FiatService {
-    static let shared = FiatService()
+class WhitelistServiceDefault: WhitelistService {
     private let operationManager: OperationManager = OperationManager()
-    private var expiredDate: Date = Date()
-    private var fiatData: [FiatData] = []
+    private let assetsUrl: URL = ApplicationConfig.shared.assetListURL!
     
-    private func updateFiatDataAwait() async -> [FiatData] {
-        let queryOperation = SubqueryFiatInfoOperation<[FiatData]>(baseUrl: ConfigService.shared.config.subqueryURL)
-        operationManager.enqueue(operations: [queryOperation], in: .transient)
-
-        return await withCheckedContinuation { continuation in
-            queryOperation.completionBlock = {
-                guard let response = try? queryOperation.extractNoCancellableResultData() else {
-                    continuation.resume(returning: [])
-                    return
+    func fetch() async throws -> [Whitelist] {
+        let operation = GitHubConfigOperationFactory<[Whitelist]>().fetchData(assetsUrl)
+        operationManager.enqueue(operations: [operation], in: .transient)
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            operation.completionBlock = {
+                do {
+                    let response = try operation.extractNoCancellableResultData() ?? []
+                    continuation.resume(returning: response)
+                } catch {
+                    continuation.resume(throwing: error)
                 }
-                continuation.resume(returning: response)
             }
         }
-    }
-    
-    private func updateFiatData(with data: [FiatData]) async {
-        fiatData = data
-        expiredDate = Date().addingTimeInterval(600)
-    }
-}
-
-extension FiatService: FiatServiceProtocol {
-    
-    func getFiat() async -> [FiatData] {
-        
-        if !fiatData.isEmpty {
-            return fiatData
-        }
-        
-        let response = await updateFiatDataAwait()
-        await updateFiatData(with: response)
-        
-        return response
     }
 }
