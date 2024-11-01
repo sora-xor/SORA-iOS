@@ -339,14 +339,11 @@ final class RuntimeSyncService {
         remoteMetadaOperation.configurationBlock = {
             do {
                 guard let currentItem = try localMetadataOperation.extractNoCancellableResultData() else {
-                    let data = (try localFileOperation.extractNoCancellableResultData()) ?? Data()
-                    let hexData = String(data: data, encoding: .utf8) ?? ""
-                    remoteMetadaOperation.result = .success(hexData)
+                    remoteMetadaOperation.result = .success("")
                     return
                 }
-                
                 if currentItem.version == runtimeVersion.specVersion {
-                    remoteMetadaOperation.result = .failure(RuntimeSyncServiceError.skipMetadataUnchanged)
+                    remoteMetadaOperation.result = .success(currentItem.metadata.toHex())
                 }
             } catch {
                 remoteMetadaOperation.result = .failure(error)
@@ -357,12 +354,22 @@ final class RuntimeSyncService {
         remoteMetadaOperation.addDependency(localFileOperation)
 
         let saveMetadataOperation = repository.saveOperation({
-            let hexMetadata = try remoteMetadaOperation.extractNoCancellableResultData()
+            var hexMetadata: String = try remoteMetadaOperation.extractNoCancellableResultData()
+            var specVersion = runtimeVersion.specVersion
+            var transactionVersion = runtimeVersion.transactionVersion
+            
+            if hexMetadata.isEmpty {
+                let data = (try localFileOperation.extractNoCancellableResultData()) ?? Data()
+                hexMetadata = String(data: data, encoding: .utf8) ?? ""
+                specVersion = 102
+                transactionVersion = 102
+            }
+            
             let rawMetadata = try Data(hexStringSSF: hexMetadata)
             let metadataItem = RuntimeMetadataItem(
                 chain: chainId,
-                version: runtimeVersion.specVersion,
-                txVersion: runtimeVersion.transactionVersion,
+                version: specVersion,
+                txVersion: transactionVersion,
                 metadata: rawMetadata,
                 resolver: nil
             )

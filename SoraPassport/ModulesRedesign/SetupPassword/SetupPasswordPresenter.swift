@@ -175,6 +175,7 @@ final class SetupPasswordPresenter: SetupPasswordPresenterProtocol {
             
             do {
                 let accounts = try await self.cloudStorageService.getBackupAccounts()
+                
                 if let foudedAccount = accounts.first(where: { self.backupAccount.address == $0.address }) {
                     try await self.cloudStorageService.deleteBackup(account: foudedAccount)
                     
@@ -183,6 +184,19 @@ final class SetupPasswordPresenter: SetupPasswordPresenterProtocol {
                     
                     try await self.cloudStorageService.saveBackup(account: self.backupAccount, password: password)
                     
+                    self.view?.hideLoading()
+                    
+                    var backupedAccountAddresses = ApplicationConfig.shared.backupedAccountAddresses
+                    backupedAccountAddresses.append(backupAccount.address)
+                    ApplicationConfig.shared.backupedAccountAddresses = backupedAccountAddresses
+                    
+                    if completion != nil {
+                        await view?.controller.dismiss(animated: true, completion: completion)
+                    } else {
+                        wireframe?.showSetupPinCode()
+                    }
+                } else {
+                    try? await self.cloudStorageService.saveBackup(account: self.backupAccount, password: password)
                     self.view?.hideLoading()
                     
                     var backupedAccountAddresses = ApplicationConfig.shared.backupedAccountAddresses
