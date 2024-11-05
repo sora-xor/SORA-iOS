@@ -55,7 +55,7 @@ enum Cards: Int, CaseIterable {
         case .pooledAssets:
             return R.string.localizable.pooledAssets(preferredLanguages: .currentLocale)
         case .scExchange:
-            return ""
+            return R.string.localizable.commonBuyXor(preferredLanguages: .currentLocale)
         }
     }
     

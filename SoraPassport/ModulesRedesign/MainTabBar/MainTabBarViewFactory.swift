@@ -554,10 +554,13 @@ extension MainTabBarViewFactory {
                                             assetManager: assetManager,
                                             fiatService: fiatService)
         
-        let explorePoolsService = ExplorePoolsService(assetInfos: walletAssets,
-                                                      fiatService: fiatService,
-                                                      polkaswapOperationFactory: polkaswapNetworkFacade,
-                                                      networkFacade: networkFacade)
+        let explorePoolsService = ExplorePoolsService(
+            assetInfos: walletAssets,
+            fiatService: fiatService,
+            polkaswapOperationFactory: polkaswapNetworkFacade,
+            networkFacade: networkFacade,
+            dexInfoService: dexService
+        )
         
         let poolViewModelsService = ExplorePoolsViewModelService(itemFactory: itemFactory,
                                                                 poolsService: explorePoolsService,

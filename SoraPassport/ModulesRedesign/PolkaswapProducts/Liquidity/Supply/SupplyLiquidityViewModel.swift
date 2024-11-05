@@ -343,32 +343,31 @@ extension SupplyLiquidityViewModel: LiquidityViewModelProtocol {
     }
     
     func choiсeBaseAssetButtonTapped() {
-        guard let assetManager = assetManager,
-              let fiatService = fiatService,
-              let xorAsset = assetManager.assetInfo(for: WalletAssetId.xor.rawValue),
-              let xstUsdAsset = assetManager.assetInfo(for: WalletAssetId.xstusd)
-        else { return }
-
-        var acceptableAssets = [xorAsset]
+        guard let assetManager = assetManager, let fiatService = fiatService else { return }
         
-        if secondAssetId != WalletAssetId.xst {
-            acceptableAssets.append(xstUsdAsset)
-        }
-        
-        let assets = acceptableAssets.filter { $0.identifier != secondAssetId }
-        
-        let factory = AssetViewModelFactory(walletAssets: assetManager.getAssetList() ?? [],
-                                            assetManager: assetManager,
-                                            fiatService: fiatService)
-        
-        wireframe?.showChoiсeBaseAsset(on: view?.controller,
-                                       assetManager: assetManager,
-                                       fiatService: fiatService,
-                                       assetViewModelFactory: factory,
-                                       assetsProvider: assetsProvider,
-                                       assetIds: assets.map { $0.identifier },
-                                       marketCapService: marketCapService) { [weak self] assetId in
-            self?.firstAssetId = assetId
+        Task {
+            let acceptableAssets = (try? await dexService.dexInfos().map { $0.baseAssetId }) ?? []
+            
+            let assets = acceptableAssets.filter { $0 != secondAssetId }
+            
+            let factory = AssetViewModelFactory(walletAssets: assetManager.getAssetList() ?? [],
+                                                assetManager: assetManager,
+                                                fiatService: fiatService)
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.wireframe?.showChoiсeBaseAsset(
+                    on: self.view?.controller,
+                    assetManager: assetManager,
+                    fiatService: fiatService,
+                    assetViewModelFactory: factory,
+                    assetsProvider: self.assetsProvider,
+                    assetIds: assets,
+                    marketCapService: self.marketCapService
+                ) { [weak self] assetId in
+                    self?.firstAssetId = assetId
+                }
+            }
         }
     }
     

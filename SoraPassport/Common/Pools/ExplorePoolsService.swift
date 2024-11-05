@@ -56,18 +56,21 @@ final class ExplorePoolsService {
     private var networkFacade: WalletNetworkOperationFactoryProtocol?
     private var pools: [ExplorePool] = []
     private let assetInfos: [AssetInfo]
+    private let dexInfoService: DexInfoService
     private var task: Task<Void, Swift.Error>?
     
     init(
         assetInfos: [AssetInfo],
         fiatService: FiatServiceProtocol?,
         polkaswapOperationFactory: PolkaswapNetworkOperationFactoryProtocol?,
-        networkFacade: WalletNetworkOperationFactoryProtocol?
+        networkFacade: WalletNetworkOperationFactoryProtocol?,
+        dexInfoService: DexInfoService
     ) {
         self.assetInfos = assetInfos
         self.fiatService = fiatService
         self.polkaswapOperationFactory = polkaswapOperationFactory
         self.networkFacade = networkFacade
+        self.dexInfoService = dexInfoService
     }
 }
 
@@ -87,8 +90,9 @@ extension ExplorePoolsService: ExplorePoolsServiceInputProtocol {
                     return
                 }
                 
-                let baseAssetIds = [WalletAssetId.xor.rawValue, WalletAssetId.xstusd]
-                let targetAssetIds: [String] = self.assetInfos.filter { !baseAssetIds.contains($0.assetId) }.map { $0.assetId }
+                let baseAssetIds = ((try? await self.dexInfoService.dexInfos().map { $0.baseAssetId }) ?? [])
+
+                let targetAssetIds: [String] = self.assetInfos.map { $0.assetId }
 
                 async let explorePools = self.collectPools(baseAssetIds: baseAssetIds, targetAssetIds: targetAssetIds).concurrentMap({ poolTuple in
                     return await self.createExplorePool(poolTuple: poolTuple, fiatData: fiatData)
@@ -105,7 +109,7 @@ extension ExplorePoolsService: ExplorePoolsServiceInputProtocol {
         var poolTuples: [(baseAssetId: String, targetAssetId: String)] = []
         
         for baseAssetId in baseAssetIds {
-            for targetAssetId in targetAssetIds {
+            for targetAssetId in targetAssetIds.filter { $0 != baseAssetId } {
                 poolTuples.append((baseAssetId, targetAssetId))
             }
         }
