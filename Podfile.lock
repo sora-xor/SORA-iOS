@@ -215,7 +215,7 @@ PODS:
   - SoraUI/PinView (1.10.3):
     - SoraUI/Controls
   - SoraUI/Skrull (1.10.3)
-  - SoraUIKit (1.1.12)
+  - SoraUIKit (1.1.13)
   - sorawallet (0.2.10)
   - Sourcery (1.9.2):
     - Sourcery/CLI-Only (= 1.9.2)
@@ -244,13 +244,13 @@ DEPENDENCIES:
   - R.swift (~> 6.1.0)
   - ReachabilitySwift
   - RobinHood (~> 2.6.1)
-  - SCard (from `https://github.com/sora-xor/sora-card-ios`, tag `1.6.0`)
+  - SCard (from `https://github.com/sora-xor/sora-card-ios`, branch `release/1.7.0`)
   - SnapKit
   - SoraDocuments
   - SoraFoundation
   - SoraKeystore
   - SoraUI
-  - SoraUIKit (from `https://github.com/soramitsu/ios-ui`, tag `1.1.12`)
+  - SoraUIKit (from `https://github.com/soramitsu/ios-ui`, tag `1.1.13`)
   - sorawallet (from `https://raw.githubusercontent.com/soramitsu/x-networking-old/0.2.10/lib/sorawallet/sorawallet.podspec`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/soramitsu/fearless-starscream.git`, tag `4.0.9`)
@@ -312,11 +312,11 @@ EXTERNAL SOURCES:
     :branch: version6-xcode13
     :git: https://github.com/onevcat/Kingfisher
   SCard:
+    :branch: release/1.7.0
     :git: https://github.com/sora-xor/sora-card-ios
-    :tag: 1.6.0
   SoraUIKit:
     :git: https://github.com/soramitsu/ios-ui
-    :tag: 1.1.12
+    :tag: 1.1.13
   sorawallet:
     :podspec: https://raw.githubusercontent.com/soramitsu/x-networking-old/0.2.10/lib/sorawallet/sorawallet.podspec
   Starscream:
@@ -333,11 +333,11 @@ CHECKOUT OPTIONS:
     :commit: d0494dd78f7adf2d3526fdf3267176553020c041
     :git: https://github.com/onevcat/Kingfisher
   SCard:
+    :commit: ae5d63307a8469207a7f30395488ca4ecc512a1f
     :git: https://github.com/sora-xor/sora-card-ios
-    :tag: 1.6.0
   SoraUIKit:
     :git: https://github.com/soramitsu/ios-ui
-    :tag: 1.1.12
+    :tag: 1.1.13
   Starscream:
     :git: https://github.com/soramitsu/fearless-starscream.git
     :tag: 4.0.9
@@ -388,7 +388,7 @@ SPEC CHECKSUMS:
   SoraFoundation: 988d90ee3159311b02e42aeba0cf7e85d8bc724c
   SoraKeystore: c42760c9270fc232a79f644c1b4bb07d9ead4ee7
   SoraUI: 1ec71151eb962591eeb898bcdd98bded59745f2d
-  SoraUIKit: 23658850633ce60865d6ddb80a2848305d771131
+  SoraUIKit: 847a9a3dd14705ec84ecacdb6e9f937dc73481eb
   sorawallet: 750c64f17ec6e72fc8c372682559a98a9ed05a84
   Sourcery: 179539341c2261068528cd15a31837b7238fd901
   Starscream: a4e6a77c535efeca8cd2ad85c0e2689500bc6c3d
@@ -397,6 +397,6 @@ SPEC CHECKSUMS:
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: add7db99e5c69a7bb359bc898cdd6b23edea0194
+PODFILE CHECKSUM: cc2b17e1100adcd9bf856f10e1d03bf2853116df
 
 COCOAPODS: 1.12.1
