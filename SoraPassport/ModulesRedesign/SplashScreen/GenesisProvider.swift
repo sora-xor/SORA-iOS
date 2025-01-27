@@ -33,7 +33,7 @@ import RobinHood
 import Foundation
 
 protocol GenesisProviderProtocol {
-    func load(completion: @escaping (String?) -> Void)
+    func load() async throws -> String?
 }
 
 final class GenesisProvider: GenesisProviderProtocol {
@@ -44,15 +44,18 @@ final class GenesisProvider: GenesisProviderProtocol {
         self.engine = engine
     }
 
-    func load(completion: @escaping (String?) -> Void) {
+    func load() async throws -> String? {
         let genesisOperation = createGenesisOperation()
-
-        genesisOperation.completionBlock = {
-            let genesis = try? genesisOperation.extractResultData()
-            completion(genesis)
-        }
-
         operationQueue.addOperations([genesisOperation], waitUntilFinished: true)
+        
+        return try await withCheckedThrowingContinuation({ continuation in
+            do {
+                let genesis = try genesisOperation.extractResultData()
+                continuation.resume(returning: genesis)
+            } catch {
+                continuation.resume(throwing: error)
+            }
+        })
     }
 
     private func createGenesisOperation() -> BaseOperation<String> {

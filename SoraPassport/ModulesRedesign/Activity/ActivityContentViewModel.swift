@@ -45,6 +45,7 @@ struct ActivityContentViewModel {
     let fiatText: String
     let status: TransactionBase.Status
     let isNeedTwoImage: Bool
+    let timestamp: String
     
     init(txHash: String = "",
          title: String = "",
@@ -57,7 +58,8 @@ struct ActivityContentViewModel {
                                                                                                            textColor: .accentPrimary)),
          fiatText: String = "",
          status: TransactionBase.Status = .success,
-         isNeedTwoImage: Bool = false) {
+         isNeedTwoImage: Bool = false,
+         timestamp: String = "") {
         self.txHash = txHash
         self.title = title
         self.subtitle = subtitle
@@ -68,6 +70,7 @@ struct ActivityContentViewModel {
         self.fiatText = fiatText
         self.status = status
         self.isNeedTwoImage = isNeedTwoImage
+        self.timestamp = timestamp
     }
 }
 
@@ -78,7 +81,8 @@ extension ActivityContentViewModel: Hashable {
         lhs.subtitle == rhs.subtitle &&
         lhs.fiatText == rhs.fiatText &&
         lhs.status == rhs.status &&
-        lhs.isNeedTwoImage == rhs.isNeedTwoImage
+        lhs.isNeedTwoImage == rhs.isNeedTwoImage &&
+        lhs.timestamp == rhs.timestamp
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -88,5 +92,6 @@ extension ActivityContentViewModel: Hashable {
         hasher.combine(fiatText)
         hasher.combine(status)
         hasher.combine(isNeedTwoImage)
+        hasher.combine(timestamp)
     }
 }

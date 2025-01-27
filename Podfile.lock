@@ -140,7 +140,7 @@ PODS:
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
   - Nantes (0.1.2)
-  - PayWingsKycSDK (1.0.2)
+  - PayWingsKycSDK (1.0.6)
   - PayWingsOAuthSDK (2.0.2):
     - JOSESwift (= 2.4.0)
     - RecaptchaEnterprise (= 18.3.0)
@@ -155,9 +155,9 @@ PODS:
     - RecaptchaInterop (~> 100.0.0)
   - RecaptchaInterop (100.0.0)
   - RobinHood (2.6.8)
-  - SCard (1.6.0):
+  - SCard (1.7.0):
     - IdensicMobileSDK
-    - PayWingsKycSDK (= 1.0.2)
+    - PayWingsKycSDK (= 1.0.6)
     - PayWingsOAuthSDK (= 2.0.2)
     - R.swift (~> 6.1.0)
     - SnapKit
@@ -215,7 +215,7 @@ PODS:
   - SoraUI/PinView (1.10.3):
     - SoraUI/Controls
   - SoraUI/Skrull (1.10.3)
-  - SoraUIKit (1.1.12)
+  - SoraUIKit (1.1.13)
   - sorawallet (0.2.10)
   - Sourcery (1.9.2):
     - Sourcery/CLI-Only (= 1.9.2)
@@ -244,13 +244,13 @@ DEPENDENCIES:
   - R.swift (~> 6.1.0)
   - ReachabilitySwift
   - RobinHood (~> 2.6.1)
-  - SCard (from `https://github.com/sora-xor/sora-card-ios`, tag `1.6.0`)
+  - SCard (from `https://github.com/sora-xor/sora-card-ios`, branch `release/1.7.0`)
   - SnapKit
   - SoraDocuments
   - SoraFoundation
   - SoraKeystore
   - SoraUI
-  - SoraUIKit (from `https://github.com/soramitsu/ios-ui`, tag `1.1.12`)
+  - SoraUIKit (from `https://github.com/soramitsu/ios-ui`, tag `1.1.13`)
   - sorawallet (from `https://raw.githubusercontent.com/soramitsu/x-networking-old/0.2.10/lib/sorawallet/sorawallet.podspec`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/soramitsu/fearless-starscream.git`, tag `4.0.9`)
@@ -312,11 +312,11 @@ EXTERNAL SOURCES:
     :branch: version6-xcode13
     :git: https://github.com/onevcat/Kingfisher
   SCard:
+    :branch: release/1.7.0
     :git: https://github.com/sora-xor/sora-card-ios
-    :tag: 1.6.0
   SoraUIKit:
     :git: https://github.com/soramitsu/ios-ui
-    :tag: 1.1.12
+    :tag: 1.1.13
   sorawallet:
     :podspec: https://raw.githubusercontent.com/soramitsu/x-networking-old/0.2.10/lib/sorawallet/sorawallet.podspec
   Starscream:
@@ -333,11 +333,11 @@ CHECKOUT OPTIONS:
     :commit: d0494dd78f7adf2d3526fdf3267176553020c041
     :git: https://github.com/onevcat/Kingfisher
   SCard:
+    :commit: a051e65146d3312f04d3e09063d83a9f907ea799
     :git: https://github.com/sora-xor/sora-card-ios
-    :tag: 1.6.0
   SoraUIKit:
     :git: https://github.com/soramitsu/ios-ui
-    :tag: 1.1.12
+    :tag: 1.1.13
   Starscream:
     :git: https://github.com/soramitsu/fearless-starscream.git
     :tag: 4.0.9
@@ -372,7 +372,7 @@ SPEC CHECKSUMS:
   lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   Nantes: 0396442578e32242223fed46050dea1850236184
-  PayWingsKycSDK: bd0a9c4294f536b1338f47004ddcdcca108e95c0
+  PayWingsKycSDK: bfd7f03a22d0df4ff40937d7fdb64e992db2dee0
   PayWingsOAuthSDK: 40168c32d47402bf33ef1c167ce2261dac6da102
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
@@ -382,13 +382,13 @@ SPEC CHECKSUMS:
   RecaptchaEnterprise: 9b60bc1e1633d120e24a098d80546776fab1282e
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   RobinHood: b775a72cc0ae55cee3dfb4a5668597aca20ba244
-  SCard: e68363341b3e69e37644a815a9a44c1325185424
+  SCard: 53512133252a31ccfe36113e34c694190287a83e
   SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
   SoraDocuments: c927a79974f73672a8f39d8c2bb143afca5d3561
   SoraFoundation: 988d90ee3159311b02e42aeba0cf7e85d8bc724c
   SoraKeystore: c42760c9270fc232a79f644c1b4bb07d9ead4ee7
   SoraUI: 1ec71151eb962591eeb898bcdd98bded59745f2d
-  SoraUIKit: 23658850633ce60865d6ddb80a2848305d771131
+  SoraUIKit: 847a9a3dd14705ec84ecacdb6e9f937dc73481eb
   sorawallet: 750c64f17ec6e72fc8c372682559a98a9ed05a84
   Sourcery: 179539341c2261068528cd15a31837b7238fd901
   Starscream: a4e6a77c535efeca8cd2ad85c0e2689500bc6c3d
@@ -397,6 +397,6 @@ SPEC CHECKSUMS:
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: add7db99e5c69a7bb359bc898cdd6b23edea0194
+PODFILE CHECKSUM: cc2b17e1100adcd9bf856f10e1d03bf2853116df
 
 COCOAPODS: 1.12.1

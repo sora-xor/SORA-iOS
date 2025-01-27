@@ -176,6 +176,9 @@ extension UIAlertController {
             completion?()
         })
         alertView.addAction(action)
-        presenter.present(alertView, animated: true, completion: nil)
+        
+        DispatchQueue.main.async {
+            presenter.present(alertView, animated: true, completion: nil)
+        }
     }
 }

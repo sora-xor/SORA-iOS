@@ -55,6 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             initFlex()
             setupLanguage()
             
+            TypographyConstants.registerFonts(from: Bundle(for: TypographyConstants.self))
+            
             let rootWindow = SoraWindow()
             rootWindow.backgroundColor = SoramitsuUI.shared.theme.palette.color(.bgPage)
             window = rootWindow

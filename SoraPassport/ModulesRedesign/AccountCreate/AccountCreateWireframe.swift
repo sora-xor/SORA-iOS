@@ -75,7 +75,9 @@ extension AccountCreateWireframe: AccountCreateWireframeProtocol {
                                                                           mnemonic: mnemonic,
                                                                           entryPoint: .onboarding,
                                                                           completion: endAddingBlock)?.controller else { return }
-        controller?.controller.navigationController?.pushViewController(setupPasswordView, animated: true)
+        DispatchQueue.main.async {
+            controller?.controller.navigationController?.pushViewController(setupPasswordView, animated: true)
+        }
     }
 }
 

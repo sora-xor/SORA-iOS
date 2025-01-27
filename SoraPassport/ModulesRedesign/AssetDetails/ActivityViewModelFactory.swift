@@ -155,14 +155,17 @@ private extension ActivityViewModelFactory {
                                                  textColor: textColor,
                                                  alignment: isRTL ? .left : .right)
         
-        return ActivityContentViewModel(txHash: transaction.base.txHash,
-                                        title: transaction.transferType.title,
-                                        subtitle: transaction.peer,
-                                        typeTransactionImage: transaction.transferType.image,
-                                        firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
-                                        firstBalanceText: firstBalanceText,
-                                        fiatText: "",
-                                        status: transaction.base.status)
+        return ActivityContentViewModel(
+            txHash: transaction.base.txHash,
+            title: transaction.transferType.title,
+            subtitle: transaction.peer,
+            typeTransactionImage: transaction.transferType.image,
+            firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
+            firstBalanceText: firstBalanceText,
+            fiatText: "",
+            status: transaction.base.status,
+            timestamp: transaction.base.timestamp
+        )
     }
     
     func swapTransactionViewModel(from swap: Swap) -> ActivityContentViewModel {
@@ -202,16 +205,19 @@ private extension ActivityViewModelFactory {
         
         let subtitle = isRTL ? "\(toAsset?.symbol ?? "") ← \(fromAsset?.symbol ?? "")" : "\(fromAsset?.symbol ?? "") → \(toAsset?.symbol ?? "")"
         
-        return ActivityContentViewModel(txHash: swap.base.txHash,
-                                        title: R.string.localizable.polkaswapSwapped(preferredLanguages: .currentLocale),
-                                        subtitle: subtitle,
-                                        typeTransactionImage: R.image.wallet.swap(),
-                                        firstAssetImageViewModel: RemoteSerializer.shared.image(with: fromAssetInfo?.icon ?? ""),
-                                        secondAssetImageViewModel: RemoteSerializer.shared.image(with: toAssetInfo?.icon ?? ""),
-                                        firstBalanceText: balanceText,
-                                        fiatText: "",
-                                        status: swap.base.status,
-                                        isNeedTwoImage: true)
+        return ActivityContentViewModel(
+            txHash: swap.base.txHash,
+            title: R.string.localizable.polkaswapSwapped(preferredLanguages: .currentLocale),
+            subtitle: subtitle,
+            typeTransactionImage: R.image.wallet.swap(),
+            firstAssetImageViewModel: RemoteSerializer.shared.image(with: fromAssetInfo?.icon ?? ""),
+            secondAssetImageViewModel: RemoteSerializer.shared.image(with: toAssetInfo?.icon ?? ""),
+            firstBalanceText: balanceText,
+            fiatText: "",
+            status: swap.base.status,
+            isNeedTwoImage: true,
+            timestamp: swap.base.timestamp
+        )
     }
     
     func liquidityTransactionViewModel(from liquidity: Liquidity) -> ActivityContentViewModel {
@@ -258,16 +264,19 @@ private extension ActivityViewModelFactory {
         let title = R.string.localizable.activityPoolTitle(preferredLanguages: .currentLocale)
         let subtitle = isRTL ? "\(toAsset?.symbol ?? "") / \(fromAsset?.symbol ?? "")" : "\(fromAsset?.symbol ?? "") / \(toAsset?.symbol ?? "")"
         
-        return ActivityContentViewModel(txHash: liquidity.base.txHash,
-                                        title: title,
-                                        subtitle: subtitle,
-                                        typeTransactionImage: liquidity.type.image,
-                                        firstAssetImageViewModel: RemoteSerializer.shared.image(with: fromAssetInfo?.icon ?? ""),
-                                        secondAssetImageViewModel: RemoteSerializer.shared.image(with: toAssetInfo?.icon ?? ""),
-                                        firstBalanceText: balanceText,
-                                        fiatText: "",
-                                        status: liquidity.base.status,
-                                        isNeedTwoImage: true)
+        return ActivityContentViewModel(
+            txHash: liquidity.base.txHash,
+            title: title,
+            subtitle: subtitle,
+            typeTransactionImage: liquidity.type.image,
+            firstAssetImageViewModel: RemoteSerializer.shared.image(with: fromAssetInfo?.icon ?? ""),
+            secondAssetImageViewModel: RemoteSerializer.shared.image(with: toAssetInfo?.icon ?? ""),
+            firstBalanceText: balanceText,
+            fiatText: "",
+            status: liquidity.base.status,
+            isNeedTwoImage: true,
+            timestamp: liquidity.base.timestamp
+        )
     }
     
     func bondTransactionViewModel(from bond: ReferralBondTransaction) -> ActivityContentViewModel {
@@ -283,15 +292,18 @@ private extension ActivityViewModelFactory {
                                                 textColor: textColor,
                                                 alignment: isRTL ? .left : .right)
         
-        return ActivityContentViewModel(txHash: bond.base.txHash,
-                                        title: bond.type.detailsTitle,
-                                        subtitle: SelectedWalletSettings.shared.currentAccount?.address ?? "",
-                                        typeTransactionImage: bond.type.image,
-                                        firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
-                                        firstBalanceText: balanceText,
-                                        fiatText: "",
-                                        status: bond.base.status,
-                                        isNeedTwoImage: false)
+        return ActivityContentViewModel(
+            txHash: bond.base.txHash,
+            title: bond.type.detailsTitle,
+            subtitle: SelectedWalletSettings.shared.currentAccount?.address ?? "",
+            typeTransactionImage: bond.type.image,
+            firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
+            firstBalanceText: balanceText,
+            fiatText: "",
+            status: bond.base.status,
+            isNeedTwoImage: false,
+            timestamp: bond.base.timestamp
+        )
     }
     
     func setReferrerTransactionViewModel(from setReferrer: SetReferrerTransaction) -> ActivityContentViewModel {
@@ -310,15 +322,18 @@ private extension ActivityViewModelFactory {
                                             alignment: isRTL ? .left : .right)
         let title = setReferrer.isMyReferrer ? R.string.localizable.referrerSet(preferredLanguages: .currentLocale) : "Referral joined"
         let subtitle = setReferrer.isMyReferrer ? SelectedWalletSettings.shared.currentAccount?.address ?? "" : setReferrer.who 
-        return ActivityContentViewModel(txHash: setReferrer.base.txHash,
-                                        title: title,
-                                        subtitle: subtitle,
-                                        typeTransactionImage: R.image.wallet.send(),
-                                        firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
-                                        firstBalanceText: balanceText,
-                                        fiatText: "",
-                                        status: setReferrer.base.status,
-                                        isNeedTwoImage: false)
+        return ActivityContentViewModel(
+            txHash: setReferrer.base.txHash,
+            title: title,
+            subtitle: subtitle,
+            typeTransactionImage: R.image.wallet.send(),
+            firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
+            firstBalanceText: balanceText,
+            fiatText: "",
+            status: setReferrer.base.status,
+            isNeedTwoImage: false,
+            timestamp: setReferrer.base.timestamp
+        )
     }
     
     func claimRewardTransactionViewModel(from transaction: ClaimReward) -> ActivityContentViewModel {
@@ -340,14 +355,17 @@ private extension ActivityViewModelFactory {
                                                  textColor: .statusSuccess,
                                                  alignment: isRTL ? .left : .right)
         
-        return ActivityContentViewModel(txHash: transaction.base.txHash,
-                                        title: R.string.localizable.demeterClaimedReward(preferredLanguages: .currentLocale),
-                                        subtitle: R.string.localizable.exploreDemeterTitle(preferredLanguages: .currentLocale),
-                                        typeTransactionImage: R.image.wallet.claimStar(),
-                                        firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
-                                        firstBalanceText: firstBalanceText,
-                                        fiatText: "",
-                                        status: transaction.base.status)
+        return ActivityContentViewModel(
+            txHash: transaction.base.txHash,
+            title: R.string.localizable.demeterClaimedReward(preferredLanguages: .currentLocale),
+            subtitle: R.string.localizable.exploreDemeterTitle(preferredLanguages: .currentLocale),
+            typeTransactionImage: R.image.wallet.claimStar(),
+            firstAssetImageViewModel: RemoteSerializer.shared.image(with: assetInfo?.icon ?? ""),
+            firstBalanceText: firstBalanceText,
+            fiatText: "",
+            status: transaction.base.status,
+            timestamp: transaction.base.timestamp
+        )
     }
     
     func farmLiquidityTransactionViewModel(from transaction: FarmLiquidity) -> ActivityContentViewModel {
@@ -366,15 +384,18 @@ private extension ActivityViewModelFactory {
                                                  textColor: .fgPrimary,
                                                  alignment: isRTL ? .left : .right)
         
-        return ActivityContentViewModel(txHash: transaction.base.txHash,
-                                        title: transaction.type.subtitle,
-                                        subtitle: R.string.localizable.exploreDemeterTitle(preferredLanguages: .currentLocale),
-                                        typeTransactionImage: transaction.type.image,
-                                        firstAssetImageViewModel: RemoteSerializer.shared.image(with: baseAssetInfo?.icon ?? ""),
-                                        secondAssetImageViewModel: RemoteSerializer.shared.image(with: poolAssetInfo?.icon ?? ""),
-                                        firstBalanceText: firstBalanceText,
-                                        fiatText: "",
-                                        status: transaction.base.status,
-                                        isNeedTwoImage: true)
+        return ActivityContentViewModel(
+            txHash: transaction.base.txHash,
+            title: transaction.type.subtitle,
+            subtitle: R.string.localizable.exploreDemeterTitle(preferredLanguages: .currentLocale),
+            typeTransactionImage: transaction.type.image,
+            firstAssetImageViewModel: RemoteSerializer.shared.image(with: baseAssetInfo?.icon ?? ""),
+            secondAssetImageViewModel: RemoteSerializer.shared.image(with: poolAssetInfo?.icon ?? ""),
+            firstBalanceText: firstBalanceText,
+            fiatText: "",
+            status: transaction.base.status,
+            isNeedTwoImage: true,
+            timestamp: transaction.base.timestamp
+        )
     }
 }

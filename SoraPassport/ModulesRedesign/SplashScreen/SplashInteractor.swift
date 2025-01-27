@@ -44,6 +44,7 @@ final class SplashInteractor: SplashInteractorProtocol {
     let eventCenter: EventCenterProtocol
     private var assetProvider: AssetsInfoProvider?
     private let whitelistService: WhitelistService
+    private var provider: GenesisProvider?
 
     init(settings: SettingsManagerProtocol,
          socketService: WebSocketServiceProtocol,
@@ -67,10 +68,12 @@ final class SplashInteractor: SplashInteractorProtocol {
     }
 
     private func loadGenesis() {
-        let provider = GenesisProvider(engine: socketService.connection!)
-        provider.load(completion: { [weak self] genesis in
+        provider = GenesisProvider(engine: socketService.connection!)
+    
+        Task { [weak self] in
+            let genesis = try await self?.provider?.load()
             self?.didLoadGenesis(genesis)
-        })
+        }
     }
 
     private func didLoadGenesis(_ genesis: String?) {
@@ -97,7 +100,7 @@ final class SplashInteractor: SplashInteractorProtocol {
             chainId: chainId,
             whitelistService: whitelistService
         )
-        assetProvider?.load { [weak self] assetInfos in
+        assetProvider?.load { assetInfos in
             Task {
                 let assetsIds = assetInfos.filter { $0.visible }.map { $0.assetId }
                 await PriceInfoService.shared.setup(for: assetsIds)
@@ -150,6 +153,6 @@ final class SplashInteractor: SplashInteractorProtocol {
 
 extension SplashInteractor: EventVisitorProtocol {
     func processRuntimeCoderReady(event: RuntimeCoderCreated) {
-        self.presenter.setupComplete()
+        presenter.setupComplete()
     }
 }

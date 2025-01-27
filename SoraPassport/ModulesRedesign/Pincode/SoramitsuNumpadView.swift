@@ -70,7 +70,7 @@ public class SoramitsuNumpadView: SoramitsuView {
         return buttons
     }()
     
-    lazy var backspaceButton: SoramitsuButton = {
+    let backspaceButton: SoramitsuButton = {
         let view = SoramitsuButton()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.sora.tintColor = .fgSecondary
@@ -82,14 +82,10 @@ public class SoramitsuNumpadView: SoramitsuView {
         view.widthAnchor.constraint(equalToConstant: 80).isActive = true
         view.heightAnchor.constraint(equalToConstant: 80).isActive = true
         view.setContentCompressionResistancePriority(.required, for: .horizontal)
-        view.sora.addHandler(for: .touchUpInside) { [weak self] in
-            guard let self = self else { return }
-            self.delegate?.numpadViewDidSelectBackspace(self)
-        }
         return view
     }()
     
-    lazy var accessoryButton: SoramitsuButton = {
+    let accessoryButton: SoramitsuButton = {
         let view = SoramitsuButton()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.sora.tintColor = .fgSecondary
@@ -101,10 +97,6 @@ public class SoramitsuNumpadView: SoramitsuView {
         view.widthAnchor.constraint(equalToConstant: 80).isActive = true
         view.heightAnchor.constraint(equalToConstant: 80).isActive = true
         view.setContentCompressionResistancePriority(.required, for: .horizontal)
-        view.sora.addHandler(for: .touchUpInside) { [weak self] in
-            guard let self = self else { return }
-            self.delegate?.numpadViewDidSelectAccessoryControl(self)
-        }
         return view
     }()
     
@@ -121,10 +113,20 @@ public class SoramitsuNumpadView: SoramitsuView {
     func setupView() {
         sora.backgroundColor = .custom(uiColor: .clear)
         sora.clipsToBounds = false
+        
+        accessoryButton.sora.addHandler(for: .touchUpInside) { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.numpadViewDidSelectAccessoryControl(self)
+        }
+        
+        backspaceButton.sora.addHandler(for: .touchUpInside) { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.numpadViewDidSelectBackspace(self)
+        }
     }
     
     func setupConstraint() {
-        var mainStackView = SoramitsuStackView()
+        let mainStackView = SoramitsuStackView()
         mainStackView.sora.backgroundColor = .custom(uiColor: .clear)
         mainStackView.sora.axis = .vertical
         mainStackView.sora.distribution = .equalSpacing
